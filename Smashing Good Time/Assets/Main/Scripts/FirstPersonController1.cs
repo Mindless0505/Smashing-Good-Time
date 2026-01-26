@@ -209,8 +209,19 @@ namespace EasyPeasyFirstPersonController
             if (!isMove) return;
 
             float speed = isCrouching ? crouchSpeed : (isSprinting ? sprintSpeed : walkSpeed);
+
             Vector3 moveDir = transform.right * moveInput.x + transform.forward * moveInput.y;
-            Vector3 horizontalVelocity = moveDir.normalized * speed;
+
+            if (moveInput.sqrMagnitude < 0.001f && !isSliding)
+            {
+                rb.linearVelocity = new Vector3(0f, rb.linearVelocity.y, 0f);
+                return;
+            }
+
+            Vector3 horizontalVelocity =
+                moveDir.sqrMagnitude > 0.001f
+                    ? moveDir.normalized * speed
+                    : Vector3.zero;
 
             if (isSliding)
                 horizontalVelocity = slideDirection * currentSlideSpeed;
@@ -223,6 +234,7 @@ namespace EasyPeasyFirstPersonController
                 rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
             }
         }
+
 
         private void HandleHeadBob()
         {
