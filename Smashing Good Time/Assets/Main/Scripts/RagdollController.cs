@@ -114,28 +114,6 @@ public class RagdollController : MonoBehaviour
     }
 
     // =====================================================================
-    // SHRINK + HIDE THE CHARACTER CONTROLLER
-    // =====================================================================
-    void HideCharacterControllerInsideArm()
-    {
-        characterController.height = shrunkenHeight;
-        characterController.radius = shrunkenRadius;
-        characterController.center = Vector3.zero;
-
-        // Position it inside the arm
-        characterController.transform.position = pelvis.position + ccHiddenOffset;
-    }
-
-    void RestoreCharacterController()
-    {
-        characterController.height = originalHeight;
-        characterController.radius = originalRadius;
-        characterController.center = originalCenter;
-    }
-
-    public bool IsRagdolled() => isRagdolled;
-
-    // =====================================================================
     // ACTIVATE RAGDOLL WITH IMPULSE
     // =====================================================================
     public void ActivateRagdoll(Vector3 initialImpulse, ForceMode mode = ForceMode.Impulse)
