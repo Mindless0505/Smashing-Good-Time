@@ -44,7 +44,7 @@ public class PlayerMovement : MonoBehaviour
         grounded = Physics.Raycast(transform.position, Vector3.down, playerHeight * 0.5f + 0.2f, WhatIsGround);
 
         MyInput();
-
+        SpeedControl();
         // handle drag
         if (grounded)
             rb.linearDamping = groundDrag;
@@ -91,6 +91,17 @@ public class PlayerMovement : MonoBehaviour
     private void ResetJump() 
     {
         jumpReady = true;
+    }
+
+    private void SpeedControl() 
+    {         
+        Vector3 flatVel = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
+        // limit velocity if needed
+        if (flatVel.magnitude > moveSpeed) 
+        {
+            Vector3 limitedVel = flatVel.normalized * moveSpeed;
+            rb.linearVelocity = new Vector3(limitedVel.x, rb.linearVelocity.y, limitedVel.z);
+        }
     }
 
 }
