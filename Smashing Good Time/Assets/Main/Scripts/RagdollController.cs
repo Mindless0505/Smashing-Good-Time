@@ -11,6 +11,14 @@ public class RagdollController : MonoBehaviour
     public Rigidbody MainRigidbody;
     public bool RagMode = false;
 
+    [SerializeField] private float requiredImpact = 5f;
+
+    private Vector3 SavedVelocity;
+    private Vector3 SavedAngularVelocity;
+
+    public float FlyMultiplier = 100f;
+
+
 
  
 
@@ -20,15 +28,26 @@ public class RagdollController : MonoBehaviour
         RagdollOff();
     }
 
+    void OnCollisionEnter(Collision collision)
+    {
+        float impactStrength = collision.relativeVelocity.magnitude;
+        if (impactStrength >= requiredImpact)
+        {
 
+            CaptureVelocity();
+            RagdollOn();
+        }
+    }
 
     void Update()
     {
+
         if (Input.GetKeyDown(KeyCode.R))
         {
             if (animator.enabled)
             {
-                RagdollOn();
+                // CaptureVelocity();
+                // RagdollOn();
             }
             else
             {
@@ -37,8 +56,9 @@ public class RagdollController : MonoBehaviour
         }   
     }
 
-    void RagdollOn()
+    public void RagdollOn()
     {
+            
             RagMode = true;
             animator.enabled = false;
             Hitbox.enabled = false;
@@ -54,8 +74,7 @@ public class RagdollController : MonoBehaviour
             }
 
             MainRigidbody.isKinematic = true;
-
-
+            SetVelocity();
     }
 
         void RagdollOff()
@@ -80,6 +99,31 @@ public class RagdollController : MonoBehaviour
 
     }
 
+        public void SpecialRagdollOn(Vector3 forceDir)
+    {
+            
+            RagMode = true;
+            animator.enabled = false;
+            Hitbox.enabled = false;
+            
+            foreach(Collider col in ragdollColliders)
+            {
+                col.enabled = true;
+            }
+
+            foreach (Rigidbody rigid in limbsRigidbodies)
+            {
+                rigid.isKinematic = false;
+            }
+
+            MainRigidbody.isKinematic = true;
+            foreach (Rigidbody limb in limbsRigidbodies)
+            {
+                limb.AddForce(forceDir*FlyMultiplier, ForceMode.Impulse);
+            }
+            
+    }
+
 
        Collider[] ragdollColliders;
        Rigidbody[] limbsRigidbodies;
@@ -97,5 +141,31 @@ public class RagdollController : MonoBehaviour
     Vector3 euler = Hitbox.transform.eulerAngles;
     Hitbox.transform.rotation = Quaternion.Euler(0f, euler.y, 0f);
 }
+
+    public void CaptureVelocity()
+    {
+        SavedVelocity = MainRigidbody.linearVelocity;
+        SavedAngularVelocity = MainRigidbody.angularVelocity;
+    }
+
+    void SetVelocity()
+    {
+        foreach (Rigidbody rb in limbsRigidbodies)
+        {
+            rb.linearVelocity = SavedVelocity;
+            rb.angularVelocity = SavedAngularVelocity;
+        }
+    }
+
+    public void RecieveHit(Vector3 forceDir)
+    {
+        if (!RagMode)
+        {
+            CaptureVelocity();
+            SpecialRagdollOn(forceDir);
+
+
+        }
+    }
 
 }

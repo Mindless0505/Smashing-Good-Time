@@ -16,6 +16,7 @@ public class SledgeAttack : MonoBehaviour
     public float attackDelay = 0.4f;
     public float attackSpeed = 1f;
     public int attackDamage= 1;
+    public float HammerForce =5f;
     public LayerMask attackLayer;
 
     public AudioClip hammerSwing;
@@ -30,7 +31,7 @@ public class SledgeAttack : MonoBehaviour
     public Grab grabscript;
     public GameObject sledgeHammer;
 
-     public GameObject playerRoot;
+    public GameObject playerRoot;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -128,19 +129,23 @@ public class SledgeAttack : MonoBehaviour
         {
             Vector3 forceDir = hit.point - cam.transform.position;
             forceDir.Normalize();
-            rb.AddForce(forceDir * 500f);
+            if (!rb.CompareTag("Player"))
+            {
+                rb.AddForce(forceDir * HammerForce, ForceMode.Impulse);
+            }
+            else
+            {
+                RagdollController ragdoll = hit.transform.root.GetComponent<RagdollController>();
+                if (ragdoll != null)
+                {
+                    ragdoll.RecieveHit(forceDir);
+                }
+            }
+
+
+
         }
 
     }
-
-    // public void ChangeAnimationState(string newState)
-    // {
-
-    //     if (currentAnimationState == newState) return;
-
-    //     currentAnimationState = newState;
-    //     animator.CrossFadeInFixedTime(currentAnimationState, 0.2f);
-    // }
-
 
 }
