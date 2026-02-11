@@ -5,16 +5,19 @@ using UnityEngine;
 public class RagdollController : MonoBehaviour
 {
     public Animator animator;
+    public GameObject PlayerRig;
     public Transform pelvis;
     public Collider Hitbox; 
+    public Rigidbody MainRigidbody;
+    public bool RagMode = false;
 
+
+ 
 
     void Awake()
-    {
-        if (animator == null) animator = GetComponentInChildren<Animator>();
-
-        // GatherRagdollBones();
-
+    {   
+        GatherRagdollBones();
+        RagdollOff();
     }
 
 
@@ -29,7 +32,6 @@ public class RagdollController : MonoBehaviour
             }
             else
             {
-                Debug.Log("Ragdolloff");
                 RagdollOff();
             }
         }   
@@ -37,34 +39,63 @@ public class RagdollController : MonoBehaviour
 
     void RagdollOn()
     {
-
-            Hitbox.enabled = false;
+            RagMode = true;
             animator.enabled = false;
+            Hitbox.enabled = false;
+            
+            foreach(Collider col in ragdollColliders)
+            {
+                col.enabled = true;
+            }
+
+            foreach (Rigidbody rigid in limbsRigidbodies)
+            {
+                rigid.isKinematic = false;
+            }
+
+            MainRigidbody.isKinematic = true;
+
 
     }
 
         void RagdollOff()
     {
+            RagMode = false;
+            
+            HitboxBringItBack();
 
+            foreach(Collider col in ragdollColliders)
+            {
+                col.enabled = false;
+            }
+
+            foreach (Rigidbody rigid in limbsRigidbodies)
+            {
+                rigid.isKinematic = true;
+            }
+
+            MainRigidbody.isKinematic = false;
             Hitbox.enabled = true;
             animator.enabled = true;
 
     }
 
 
-    // void GatherRagdollBones()
-    // {
+       Collider[] ragdollColliders;
+       Rigidbody[] limbsRigidbodies;
 
-    //     Rigidbody[] rbs = GetComponentsInChildren<Rigidbody>(true);
+    void GatherRagdollBones()
+    {
+        ragdollColliders = PlayerRig.GetComponentsInChildren<Collider>();
+        limbsRigidbodies = PlayerRig.GetComponentsInChildren<Rigidbody>();
+    }
 
-    //     foreach (var rb in rbs)
-    //     {
-    //         if (rb.gameObject == this.gameObject) continue;
+    public void HitboxBringItBack()
+{
+    Hitbox.transform.position = pelvis.position;
 
-    //         ragdollBodies.Add(rb);
+    Vector3 euler = Hitbox.transform.eulerAngles;
+    Hitbox.transform.rotation = Quaternion.Euler(0f, euler.y, 0f);
+}
 
-    //         var col = rb.GetComponent<Collider>();
-    //         if (col != null) ragdollColliders.Add(col);
-    //     }
-    // }
 }
