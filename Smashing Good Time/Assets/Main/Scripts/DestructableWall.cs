@@ -8,9 +8,11 @@ public class DestructableWall : MonoBehaviour
     public float requiredHealth = 50f;
     [SerializeField] private Transform PrefabWall;
     
+    public bool isDestroyed = false;
 
     void OnCollisionEnter(Collision collision)
     {
+        if (isDestroyed) return; // prevent multiple destructions
         Debug.Log("Collision detected with " + collision.gameObject.name);
         // calculate the impact strength based on the relative velocity of the collision
         float impactStrength = collision.relativeVelocity.magnitude;
@@ -19,6 +21,7 @@ public class DestructableWall : MonoBehaviour
         // check if the impact strength meets the required threshold or if the health is depleted
         if (impactStrength >= requiredImpact || requiredHealth <= 0)
         {
+            isDestroyed = true;
             SwitchObject();
         }
     }
