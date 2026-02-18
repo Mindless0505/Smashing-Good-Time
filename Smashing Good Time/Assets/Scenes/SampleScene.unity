@@ -3632,7 +3632,7 @@ MonoBehaviour:
   orientation: {fileID: 1227560741}
   playerCam: {fileID: 1484882148}
   rb: {fileID: 0}
-  dashForce: 20
+  dashForce: 100
   dashUpwardForce: 0
   dashDuration: 0.25
   dashCooldown: 1.5
