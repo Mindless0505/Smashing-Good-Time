@@ -4,6 +4,9 @@ public class PlayerMovement : MonoBehaviour
 {
     [Header("Movement")]
     public float moveSpeed;
+    public float originalMoveSpeed;
+    public float sprintSpeed;
+    public float crouchSpeed;
     public float groundDrag;
 
     public float jumpForce;
@@ -13,6 +16,8 @@ public class PlayerMovement : MonoBehaviour
 
     [Header("Keybinds")]
     public KeyCode jumpKey = KeyCode.Space;
+    public KeyCode sprintKey = KeyCode.LeftShift;
+    public KeyCode crouchKey = KeyCode.LeftControl;
 
     [Header("Ground Check")]
     
@@ -57,7 +62,10 @@ public class PlayerMovement : MonoBehaviour
     }
 
     private void MyInput() 
-    { 
+    {
+        // Default speed
+        moveSpeed = originalMoveSpeed;
+
         horizontalInput = Input.GetAxisRaw("Horizontal");
         verticalInput = Input.GetAxisRaw("Vertical");
 
@@ -68,6 +76,20 @@ public class PlayerMovement : MonoBehaviour
             Jump();
             Invoke(nameof(ResetJump), jumpCooldown);
         }
+        
+
+        // Sprint
+        if (Input.GetKey(sprintKey))
+        {
+            Sprint();
+        }
+
+        // Crouch (overrides sprint if both pressed)
+        if (Input.GetKey(crouchKey))
+        {
+            Crouch();
+        }
+
     }
 
     private void MovePlayer() 
@@ -87,6 +109,16 @@ public class PlayerMovement : MonoBehaviour
         // reset y velocity
         rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
         rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
+    }
+
+    private void Sprint()
+    {
+        moveSpeed = sprintSpeed;
+    }
+
+    private void Crouch()
+    {
+        moveSpeed = crouchSpeed;
     }
     private void ResetJump() 
     {
