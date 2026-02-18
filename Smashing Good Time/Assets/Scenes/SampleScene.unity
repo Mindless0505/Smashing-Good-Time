@@ -2732,6 +2732,7 @@ GameObject:
   m_Component:
   - component: {fileID: 797839864}
   - component: {fileID: 797839863}
+  - component: {fileID: 797839865}
   m_Layer: 0
   m_Name: CameraHolder
   m_TagString: Untagged
@@ -2769,6 +2770,18 @@ Transform:
   - {fileID: 1484882148}
   m_Father: {fileID: 520366059}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &797839865
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 797839862}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e85ea724e602924e96b901710e92878, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!144 &812623806
 CharacterJoint:
   m_ObjectHideFlags: 0
@@ -3475,6 +3488,7 @@ GameObject:
   - component: {fileID: 1224883939}
   - component: {fileID: 1224883940}
   - component: {fileID: 1224883941}
+  - component: {fileID: 1224883942}
   m_Layer: 0
   m_Name: PlayerTest
   m_TagString: Player
@@ -3539,13 +3553,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 51a429d235dc3d441b7788cc3bfc8a65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 12
+  moveSpeed: 10
+  originalMoveSpeed: 10
+  sprintSpeed: 30
+  crouchSpeed: 6
   groundDrag: 5
   jumpForce: 8
   jumpCooldown: 0.25
   airMultiplier: 1
   jumpReady: 1
   jumpKey: 32
+  sprintKey: 304
+  crouchKey: 306
   playerHeight: 2
   WhatIsGround:
     serializedVersion: 2
@@ -3598,6 +3617,26 @@ MonoBehaviour:
   respawnPoint: {fileID: 1024425304}
   respawnDelay: 3
   lives: 3
+--- !u!114 &1224883942
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1224883936}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 020ab3c7a5f39bc4eb515c65315085dd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  orientation: {fileID: 1227560741}
+  playerCam: {fileID: 1484882148}
+  rb: {fileID: 0}
+  dashForce: 20
+  dashUpwardForce: 0
+  dashDuration: 0.25
+  dashCooldown: 1.5
+  dashKey: 113
 --- !u!1 &1227560740
 GameObject:
   m_ObjectHideFlags: 0
@@ -4306,7 +4345,7 @@ GameObject:
   - component: {fileID: 1484882149}
   m_Layer: 0
   m_Name: PlayerCamera
-  m_TagString: Untagged
+  m_TagString: MainCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
