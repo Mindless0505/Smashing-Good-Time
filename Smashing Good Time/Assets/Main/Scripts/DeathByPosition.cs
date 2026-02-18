@@ -26,6 +26,11 @@ public class DeathByPosition : MonoBehaviour
     {
         currentLives = lives;
         rb = GetComponent<Rigidbody>();
+
+        if (respawnPoint == null)
+    {
+        respawnPoint = GameObject.Find("RespawnPoint").transform;
+    }
     }
 
     void Update()
