@@ -2,8 +2,9 @@ using UnityEngine;
 using System;
 using System.Collections;
 using Random = UnityEngine.Random;
+using Unity.Netcode;
 
-public class SledgeAttack : MonoBehaviour
+public class SledgeAttack : NetworkBehaviour
 {
 
     Animator animator;
@@ -44,6 +45,10 @@ public class SledgeAttack : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(!IsOwner)
+        {
+            return;
+        }
     //   isGrounded = controller.isGrounded;
         if(grabscript.heldObject == null)
         {

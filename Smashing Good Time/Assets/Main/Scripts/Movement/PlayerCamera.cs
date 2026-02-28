@@ -2,8 +2,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Unity.Netcode;
 
-public class PlayerCamera : MonoBehaviour
+
+public class PlayerCamera : NetworkBehaviour
 {
     public float sensX;
     public float sensY;
@@ -13,8 +15,10 @@ public class PlayerCamera : MonoBehaviour
     public float xRotation;
     public float yRotation;
 
+
     void Start()
     {
+
         // lock cursor in middle and stop it from being visible
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
@@ -24,6 +28,15 @@ public class PlayerCamera : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // if(SceneManager.GetActiveScene().name =="Game")
+        // {
+
+        // }
+        if(!IsOwner)
+        {
+            return;
+        }
+
         // get the mouse input
         float mouseX = Input.GetAxisRaw("Mouse X") * Time.deltaTime * sensX;
         float mouseY = Input.GetAxisRaw("Mouse Y") * Time.deltaTime * sensX;
