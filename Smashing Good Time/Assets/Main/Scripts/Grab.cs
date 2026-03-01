@@ -1,6 +1,7 @@
 using UnityEngine;
+using Unity.Netcode;
 
-public class Grab : MonoBehaviour
+public class Grab : NetworkBehaviour
 {
 
     public Camera cam;
@@ -30,6 +31,10 @@ public class Grab : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(!IsOwner)
+        {
+            return;
+        }
 
         if (Input.GetKeyDown(KeyCode.E))
         {

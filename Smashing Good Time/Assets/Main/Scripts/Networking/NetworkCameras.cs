@@ -11,12 +11,38 @@ public class NetworkCameras : NetworkBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        myCam.enabled = false;
+        myAudioListener.enabled = false;
+                
+       if(!IsOwner)
+        {
+            return;
+        }
+        else
+        {
+            if(myCam.enabled == false)
+            {
+                myCam.enabled = true;
+            }
+
+            if(myAudioListener.enabled == false)
+            {
+                myAudioListener.enabled = true;
+            }
+        }
         
     }
 
     // Update is called once per frame
     void Update()
     {
+
+    }
+
+}
+
+
+
         // I just put this here for reference to copy and paste. it means nothing yet
 
         // I need to make something like this
@@ -46,20 +72,7 @@ public class NetworkCameras : NetworkBehaviour
 //     }
 // }
 
-        // if(!IsOwner)
-        // {
-        //         if(myCam.enabled == false)
-        //     {
-        //         myCam.enabled = true;
-        //     }
 
-        //     if(myAudioListener.enabled == false)
-        //     {
-        //         myAudioListener.enabled = true;
-        //     }
 
         // }
         
-    }
-
-}
