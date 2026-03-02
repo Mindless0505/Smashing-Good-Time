@@ -1242,10 +1242,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  moveSpeed: 10
-  originalMoveSpeed: 10
-  sprintSpeed: 30
-  crouchSpeed: 6
+  moveSpeed: 8
+  originalMoveSpeed: 8
+  sprintSpeed: 12
+  crouchSpeed: 4
   groundDrag: 5
   jumpForce: 8
   jumpCooldown: 0.25
