@@ -3,6 +3,12 @@ using Unity.Netcode;
 
 public class PlayerMovement : NetworkBehaviour
 {
+    [Header("Camera")]
+    public Camera playerCamera;
+    public float sprintFOV = 75f;
+    public float normalFOV = 60f;
+    public float fovSpeed = 8f;
+
     [Header("Movement")]
     public float moveSpeed;
     public float originalMoveSpeed;
@@ -57,6 +63,7 @@ public class PlayerMovement : NetworkBehaviour
 
         MyInput();
         SpeedControl();
+        HandleFOV();
         // handle drag
         if (grounded)
             rb.linearDamping = groundDrag;
@@ -141,6 +148,22 @@ public class PlayerMovement : NetworkBehaviour
             Vector3 limitedVel = flatVel.normalized * moveSpeed;
             rb.linearVelocity = new Vector3(limitedVel.x, rb.linearVelocity.y, limitedVel.z);
         }
+    }
+
+    private void HandleFOV()
+    {
+        float targetFOV = normalFOV;
+
+        if (Input.GetKey(sprintKey) && grounded)
+        {
+            targetFOV = sprintFOV;
+        }
+
+        playerCamera.fieldOfView = Mathf.Lerp(
+            playerCamera.fieldOfView,
+            targetFOV,
+            Time.deltaTime * fovSpeed
+        );
     }
 
 }

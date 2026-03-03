@@ -7,11 +7,15 @@ public class NetcodeUI : MonoBehaviour
 {
     [SerializeField] private Button StartHostButton;
     [SerializeField] private Button StartClientButton;
+    private bool hasStarted = false;
 
     private void Awake()
     {
         StartHostButton.onClick.AddListener(() =>
         {
+            if (hasStarted) return;
+            hasStarted = true;
+
             Debug.Log("Starting Host...");
             NetworkManager.Singleton.StartHost();
             Hide();

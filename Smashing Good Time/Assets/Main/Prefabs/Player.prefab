@@ -1242,6 +1242,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
+  playerCamera: {fileID: 6809821254135934710}
+  sprintFOV: 75
+  normalFOV: 60
+  fovSpeed: 8
   moveSpeed: 8
   originalMoveSpeed: 8
   sprintSpeed: 12
