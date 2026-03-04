@@ -4,69 +4,73 @@ using UnityEngine;
 public class DestructableWall : NetworkBehaviour
 {
     [Header("Impact Settings")]
-    // set the required impact strength and health threshold for the wall to be destroyed
     public float requiredImpact = 5f;
     public float requiredHealth = 50f;
-    [SerializeField] private Transform PrefabWall;
-    
-    public bool isDestroyed = false;
 
-    //void OnCollisionEnter(Collision collision)
-    //{
-    //    Debug.Log("Collision detected with " + collision.gameObject.name);
+    // Wall that replaces
+    [SerializeField] private GameObject destroyedWallPrefab;
 
-    //    // calculate the impact strength based on the relative velocity of the collision
-    //    float impactStrength = collision.relativeVelocity.magnitude;
-    //    requiredHealth -= impactStrength;
-    //    Debug.Log("Impact strength: " + impactStrength);
+    // bool to prevent multiple destruction calls
+    private bool isDestroyed = false;
+    // Reference to the NetworkObject component
+    private NetworkObject netObj;
 
-    //    // check if the impact strength meets the required threshold or if the health is depleted
-    //    if (impactStrength >= requiredImpact || requiredHealth <= 0)
-    //    {
-    //        DestroyWall();
-    //    }
-    //}
-    void OnCollisionEnter(Collision collision)
+    private void Awake()
     {
-        if (!IsServer) return;
+        netObj = GetComponent<NetworkObject>();
+    }
 
-        Debug.Log("Collision detected with " + collision.gameObject.name);
+    private void OnCollisionEnter(Collision collision)
+    {
+        // Only process collisions on the server and if the wall isn't already destroyed
+        if (!IsServer || isDestroyed) return;
 
-        // calculate the impact strength based on the relative velocity of the collision
+        // Calculate the impact strength 
         float impactStrength = collision.relativeVelocity.magnitude;
         requiredHealth -= impactStrength;
-        Debug.Log("Impact strength: " + impactStrength);
 
-        // check if the impact strength meets the required threshold or if the health is depleted
-        if (impactStrength >= requiredImpact || requiredHealth <= 0)
+        // Check if the impact is strong enough to destroy the wall or if the wall's health has been depleted
+        if (impactStrength >= requiredImpact || requiredHealth <= 0f)
         {
             DestroyWall();
         }
     }
 
-    void SwitchObject()
+    private void DestroyWall()
     {
-        // Instantiate the new wall prefab at the same position and rotation as the original wall
-        Transform wall = Instantiate(PrefabWall, transform.position, transform.rotation);
-        
-        NetworkObject networkObject = wall.GetComponent<NetworkObject>();
-        networkObject.Spawn();
-        Destroy(gameObject);
-        Debug.Log("Wall destroyed");
-    }
-
-    void DestroyWall()
-    {
+        // Prevent multiple destruction calls
         if (isDestroyed) return;
-
         isDestroyed = true;
 
-        Transform wall = Instantiate(PrefabWall, transform.position, transform.rotation);
-        wall.GetComponent<NetworkObject>().Spawn(true);
+        // Spawn fragments locally on the server
+        Instantiate(destroyedWallPrefab, transform.position, transform.rotation);
 
-        GetComponent<NetworkObject>().Despawn(true);
+        // Tell all clients to spawn fragments
+        if (IsServer)
+        {
+            SpawnFragmentsClientRpc(transform.position, transform.rotation);
+        }
 
-        Debug.Log("Wall destroyed");
+        // Despawn the intact wall across the network
+        if (netObj != null && netObj.IsSpawned)
+        {
+            // destroys on server and all clients
+            netObj.Despawn(true); 
+        }
+        else
+        {
+            // fallback for non-networked objects
+            Destroy(gameObject);
+        }
     }
 
+    // ClientRpc to spawn fragments on all clients
+    [ClientRpc]
+    private void SpawnFragmentsClientRpc(Vector3 position, Quaternion rotation)
+    {
+        // server already spawned
+        if (IsServer) return;
+        // Spawn fragments on clients
+        Instantiate(destroyedWallPrefab, position, rotation);
+    }
 }

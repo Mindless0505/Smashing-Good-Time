@@ -196,8 +196,7 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   requiredImpact: 5
   requiredHealth: 50
-  PrefabWall: {fileID: 8066799569189640852, guid: e7fb065157ca92349b3bfd97f6fa5e7f, type: 3}
-  isDestroyed: 0
+  destroyedWallPrefab: {fileID: 1060476820420284325, guid: 0d542dd9a39ed70479d220b2cc6504f4, type: 3}
 --- !u!114 &-8340705564400526537
 MonoBehaviour:
   m_ObjectHideFlags: 0
