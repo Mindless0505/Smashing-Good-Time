@@ -631,7 +631,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &7688883431695519563
 Transform:
   m_ObjectHideFlags: 0
@@ -709,6 +709,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2656622322622517297}
+  - component: {fileID: 3619284405714624866}
+  - component: {fileID: 5101463799559519740}
   - component: {fileID: 7469175204836625121}
   m_Layer: 0
   m_Name: PlayerTest
@@ -736,6 +738,50 @@ Transform:
   - {fileID: 1882604776587564966}
   m_Father: {fileID: 3183915106961896051}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!136 &3619284405714624866
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3065157803337763089}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 0
+  serializedVersion: 2
+  m_Radius: 0.4
+  m_Height: 1.8
+  m_Direction: 1
+  m_Center: {x: 0, y: -0.13, z: 0}
+--- !u!114 &5101463799559519740
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3065157803337763089}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f848cfd309e0db64ca803d90d75d7966, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minY: -10
+  maxY: 100
+  maxX: 100
+  minX: -100
+  maxZ: 100
+  minZ: -100
+  respawnPoint: {fileID: 0}
+  respawnDelay: 3
+  lives: 3
 --- !u!114 &7469175204836625121
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -909,10 +955,8 @@ GameObject:
   - component: {fileID: 3881939328768132254}
   - component: {fileID: 3529998294347375929}
   - component: {fileID: 9127887918834154567}
-  - component: {fileID: 1427902085583495070}
-  - component: {fileID: 5411376580419281271}
   m_Layer: 0
-  m_Name: Player
+  m_Name: Player 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1290,48 +1334,6 @@ CapsuleCollider:
   m_Height: 1.8
   m_Direction: 1
   m_Center: {x: 0, y: -0.7, z: 0}
---- !u!114 &1427902085583495070
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9041923656687872667}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2f0546acdf988374485df4f0122c5e48, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ShowTopMostFoldoutHeaderGroup: 1
-  animator: {fileID: 6327560707595130360}
-  PlayerRig: {fileID: 5300313779878336257}
-  pelvis: {fileID: 5474131117020670081}
-  Hitbox: {fileID: 9127887918834154567}
-  MainRigidbody: {fileID: 3881939328768132254}
-  RagMode: 0
-  requiredImpact: 5
-  FlyMultiplier: 25
---- !u!114 &5411376580419281271
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9041923656687872667}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f848cfd309e0db64ca803d90d75d7966, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  minY: -10
-  maxY: 100
-  maxX: 100
-  minX: -100
-  maxZ: 100
-  minZ: -100
-  respawnPoint: {fileID: 0}
-  respawnDelay: 3
-  lives: 999
 --- !u!1001 &484866321443317865
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1346,15 +1348,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 7c2d62f28a29fd3468648d3c6e3a8d56, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 5.7061157
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 7c2d62f28a29fd3468648d3c6e3a8d56, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.97
+      value: 0.5905107
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 7c2d62f28a29fd3468648d3c6e3a8d56, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: 14.037069
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 7c2d62f28a29fd3468648d3c6e3a8d56, type: 3}
       propertyPath: m_LocalRotation.w
@@ -1424,6 +1426,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 7c2d62f28a29fd3468648d3c6e3a8d56, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1282779610086606588}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 7c2d62f28a29fd3468648d3c6e3a8d56, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6512375348827354092}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 7c2d62f28a29fd3468648d3c6e3a8d56, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6134245997830807554}
     - targetCorrespondingSourceObject: {fileID: 5707441806202666856, guid: 7c2d62f28a29fd3468648d3c6e3a8d56, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1053355471651002088}
@@ -1554,12 +1562,59 @@ CapsuleCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.4
   m_Height: 1.8
   m_Direction: 1
   m_Center: {x: 0, y: 0.9, z: 0}
+--- !u!114 &6512375348827354092
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 755477223944803640}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f0546acdf988374485df4f0122c5e48, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  animator: {fileID: 6327560707595130360}
+  PlayerRig: {fileID: 5300313779878336257}
+  pelvis: {fileID: 5474131117020670081}
+  Hitbox: {fileID: 1282779610086606588}
+  MainRigidbody: {fileID: 6134245997830807554}
+  RagMode: 0
+  requiredImpact: 5
+  FlyMultiplier: 25
+--- !u!54 &6134245997830807554
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 755477223944803640}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1 &1570409776824290910 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: -7822295127614527945, guid: 7c2d62f28a29fd3468648d3c6e3a8d56, type: 3}
@@ -3709,11 +3764,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f0546acdf988374485df4f0122c5e48, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ShowTopMostFoldoutHeaderGroup: 1
   animator: {fileID: 8149873662380121334}
   PlayerRig: {fileID: 8017629264097992207}
   pelvis: {fileID: 7868401138716516751}
-  Hitbox: {fileID: 0}
+  Hitbox: {fileID: 3619284405714624866}
   MainRigidbody: {fileID: 0}
   RagMode: 0
   requiredImpact: 5

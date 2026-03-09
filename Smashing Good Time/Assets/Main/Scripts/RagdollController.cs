@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Unity.Netcode;
 
-public class RagdollController : MonoBehaviour
+public class RagdollController : NetworkBehaviour
 {
     public Animator animator;
     public GameObject PlayerRig;
@@ -42,7 +43,12 @@ public class RagdollController : MonoBehaviour
     void Update()
     {
 
-        if (Input.GetKeyDown(KeyCode.R))
+        if(!IsOwner)
+        {
+            return;
+        }
+
+        if (Input.GetKeyDown(KeyCode.Space))
         {
             if (animator.enabled)
             {
