@@ -197,6 +197,7 @@ MonoBehaviour:
   requiredImpact: 5
   requiredHealth: 50
   destroyedWallPrefab: {fileID: 1060476820420284325, guid: 0d542dd9a39ed70479d220b2cc6504f4, type: 3}
+  serverPrefab: {fileID: 4390090490592047980, guid: c1b21e9416f244645824bb722eb60068, type: 3}
 --- !u!114 &-8340705564400526537
 MonoBehaviour:
   m_ObjectHideFlags: 0

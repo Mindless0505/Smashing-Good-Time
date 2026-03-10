@@ -9,6 +9,8 @@ public class DestructableWall : NetworkBehaviour
 
     // Wall that replaces
     [SerializeField] private GameObject destroyedWallPrefab;
+    // Wall that will stay after destruction
+    [SerializeField] private GameObject serverPrefab;
 
     // bool to prevent multiple destruction calls
     private bool isDestroyed = false;
@@ -49,6 +51,19 @@ public class DestructableWall : NetworkBehaviour
         if (IsServer)
         {
             SpawnFragmentsClientRpc(transform.position, transform.rotation);
+        }
+
+        // Spawn one object that is on server
+        if (IsServer && serverPrefab != null)
+        {
+            GameObject serverObj = Instantiate(serverPrefab, transform.position, transform.rotation);
+            NetworkObject serverNetObj = serverObj.GetComponent<NetworkObject>();
+
+            // only spawn if you set the variable in the inspector to prevent errors
+            if (serverNetObj != null)
+            {
+                serverNetObj.Spawn(true);
+            }
         }
 
         // Despawn the intact wall across the network
