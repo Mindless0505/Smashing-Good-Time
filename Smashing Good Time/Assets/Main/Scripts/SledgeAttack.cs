@@ -29,15 +29,15 @@ public class SledgeAttack : NetworkBehaviour
 
     public Camera cam;
 
-    public Grab grabscript;
     public GameObject sledgeHammer;
 
     public GameObject playerRoot;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    private bool VisualActive;
+
+    
     void Start()
     {
-        // controller = GetComponent<CharacterController>();
         animator = GetComponentInChildren<Animator>();
         audioSource = GetComponent<AudioSource>();
     }
@@ -49,28 +49,26 @@ public class SledgeAttack : NetworkBehaviour
         {
             return;
         }
-    //   isGrounded = controller.isGrounded;
-        if(grabscript.heldObject == null)
+
+        if(VisualActive=true)
         {
 
-            SetVisualsActive(sledgeHammer, true);
             if(Input.GetMouseButtonDown(0))
-            {Attack();}
+            {
+                Attack();
+            }
         }
-        else
-        {
-            SetVisualsActive(sledgeHammer, false);
-        }
+
         
       
-
-    //   SetAnimations();  
+ 
     }
 
-    public void SetVisualsActive(GameObject parent, bool active)
+    public void SetVisualsActive(bool active)
     {
-    // Get all Renderer components in parent and children
-        Renderer[] renderers = parent.GetComponentsInChildren<Renderer>();
+        VisualActive = active;
+        // Get all Renderer components in parent and children
+        Renderer[] renderers = sledgeHammer.GetComponentsInChildren<Renderer>();
 
         foreach (Renderer r in renderers)
         {
@@ -84,11 +82,7 @@ public class SledgeAttack : NetworkBehaviour
         
         readyToAttack = false;
         attacking = true;
-
-        // hammer.GetComponent<Animator>().Play("Hammerswing");
-
-        // if (animator != null)
-        //     animator.SetTrigger("Hammerswing");
+;
 
         hammerAnimator.SetTrigger("Swing");
 
@@ -97,7 +91,7 @@ public class SledgeAttack : NetworkBehaviour
 
             audioSource.pitch = Random.Range(0.9f,1.1f);
             audioSource.PlayOneShot(hammerSwing);
-        // hammer.GetComponent<Animator>().Play("Default");
+
       
     }
 
@@ -110,7 +104,7 @@ public class SledgeAttack : NetworkBehaviour
 
     void AttackRaycast()
     {
-        if(sledgeHammer.GetComponent<Renderer>().enabled == true)
+        if(VisualActive= true)
         {
             
             if(Physics.Raycast(cam.transform.position, cam.transform.forward, out RaycastHit hit, attackDistance, attackLayer))

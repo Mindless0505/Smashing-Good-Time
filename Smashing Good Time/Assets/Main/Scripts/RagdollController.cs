@@ -31,6 +31,8 @@ public class RagdollController : NetworkBehaviour
     [SerializeField] private AudioListener MainCamAudio;
     [SerializeField] private Camera RagCam;
     [SerializeField] private AudioListener RagCamAudio;
+
+    public SledgeAttack Sledge;
  
 
     void Awake()
@@ -40,6 +42,7 @@ public class RagdollController : NetworkBehaviour
 
         RagCam.enabled=false;
         RagCamAudio.enabled=false;
+
 
     }
 
@@ -91,10 +94,13 @@ public class RagdollController : NetworkBehaviour
             MainRigidbody.isKinematic = true;
             SetVelocity();
 
-        MainCam.enabled = false;
-        MainCamAudio.enabled = false;
-        RagCam.enabled=true;
-        RagCamAudio.enabled=true;
+            MainCam.enabled = false;
+            MainCamAudio.enabled = false;
+            RagCam.enabled=true;
+            RagCamAudio.enabled=true;
+            Sledge.SetVisualsActive(false);
+
+
     }
 
         void RagdollOff(Vector3 standPos)
@@ -127,6 +133,7 @@ public class RagdollController : NetworkBehaviour
             MainCamAudio.enabled = true;
             RagCam.enabled=false;
             RagCamAudio.enabled=false;
+            Sledge.SetVisualsActive(true);
     }
 
     
@@ -153,12 +160,14 @@ public class RagdollController : NetworkBehaviour
             {
                 limb.AddForce(forceDir*FlyMultiplier, ForceMode.Impulse);
             }
-            
+
             MainCam.enabled = false;
             MainCamAudio.enabled = false;
             RagCam.enabled=true;
             RagCamAudio.enabled=true;
+            Sledge.SetVisualsActive(false);
 
+            
     }
 
 

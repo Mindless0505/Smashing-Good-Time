@@ -16,7 +16,7 @@ public class Grab : NetworkBehaviour
     public float adjustedGrabForce;
     public float adjustedDropLimit;
     
-
+    public SledgeAttack Sledge;
 
     public LayerMask grabLayer;
 
@@ -57,10 +57,8 @@ public class Grab : NetworkBehaviour
         {
             if (hit.rigidbody != null)
             {
-                // if (GetComponent<Rigidbody>().mass > maxGrabMass)
-                // {
-                //     return;
-                // }
+
+                Sledge.SetVisualsActive(false);
 
                 heldObject = hit.rigidbody;
                 heldObject.useGravity = false;
@@ -103,11 +101,14 @@ public class Grab : NetworkBehaviour
 
     public void DropObject()
     {
+
         if(heldObject == null) return;
 
         heldObject.useGravity = true;
         heldObject.linearDamping = 0f;
         heldObject = null;
+
+        Sledge.SetVisualsActive(true);
     }
 
     bool IsStandingOn(Rigidbody obj)

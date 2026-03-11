@@ -1,6 +1,7 @@
 using UnityEngine;
+using Unity.Netcode;
 
-public class RagdollMoveCamera : MonoBehaviour
+public class RagdollMoveCamera : NetworkBehaviour
 {
     public Transform target;        // Assign ragdoll body part (hips/head)
     public Vector3 offset = new Vector3(0f, 2f, -4f);
@@ -9,6 +10,8 @@ public class RagdollMoveCamera : MonoBehaviour
 
     void LateUpdate()
     {
+        if(!IsOwner) return;
+
         if (target == null) return;
 
         // Desired camera position
