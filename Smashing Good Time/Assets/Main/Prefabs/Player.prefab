@@ -1024,7 +1024,7 @@ MonoBehaviour:
   sensY: 800
   orientation: {fileID: 7652167074971804034}
   target: {fileID: 5474131117020670081}
-  distance: 5
+  distance: 3.5
   xRotation: 0
   yRotation: 0
 --- !u!1 &9041923656687872667
