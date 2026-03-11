@@ -32,7 +32,7 @@ public class PlayerMovement : NetworkBehaviour
     public LayerMask WhatIsGround;
     public bool grounded;
 
-    
+    public RagdollController Ragdoll;
 
     public Transform orientation;
 
@@ -61,9 +61,13 @@ public class PlayerMovement : NetworkBehaviour
         // ground check
         grounded = Physics.Raycast(transform.position, Vector3.down, playerHeight * 0.5f + 0.2f, WhatIsGround);
 
+        if (!Ragdoll.RagMode)
+        {
         MyInput();
         SpeedControl();
         HandleFOV();
+        }
+
         // handle drag
         if (grounded)
             rb.linearDamping = groundDrag;

@@ -11,6 +11,14 @@ public class RagdollController : NetworkBehaviour
     public Collider Hitbox; 
     public Rigidbody MainRigidbody;
     public bool RagMode = false;
+    public Transform MainTransform;
+    
+    public float standheight = 0.5f;
+    public float checkheight = 2.5f;
+    public float checkRadius = 0.5f;
+    public float searchStep = 0.25f;
+    public float maxSearchRadius = 1f;
+    public LayerMask collisionMask;
 
     [SerializeField] private float requiredImpact = 5f;
 
@@ -19,14 +27,20 @@ public class RagdollController : NetworkBehaviour
 
     public float FlyMultiplier = 100f;
 
-
-
+    [SerializeField] private Camera MainCam;
+    [SerializeField] private AudioListener MainCamAudio;
+    [SerializeField] private Camera RagCam;
+    [SerializeField] private AudioListener RagCamAudio;
  
 
     void Awake()
     {   
         GatherRagdollBones();
-        RagdollOff();
+        RagdollOff(MainTransform.position);
+
+        RagCam.enabled=false;
+        RagCamAudio.enabled=false;
+
     }
 
     void OnCollisionEnter(Collision collision)
@@ -50,14 +64,9 @@ public class RagdollController : NetworkBehaviour
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            if (animator.enabled)
+            if (!animator.enabled)
             {
-                // CaptureVelocity();
-                // RagdollOn();
-            }
-            else
-            {
-                RagdollOff();
+                TryStand();
             }
         }   
     }
@@ -81,13 +90,19 @@ public class RagdollController : NetworkBehaviour
 
             MainRigidbody.isKinematic = true;
             SetVelocity();
+
+        MainCam.enabled = false;
+        MainCamAudio.enabled = false;
+        RagCam.enabled=true;
+        RagCamAudio.enabled=true;
     }
 
-        void RagdollOff()
+        void RagdollOff(Vector3 standPos)
     {
+
             RagMode = false;
             
-            HitboxBringItBack();
+            // HitboxBringItBack();
 
             foreach(Collider col in ragdollColliders)
             {
@@ -99,11 +114,22 @@ public class RagdollController : NetworkBehaviour
                 rigid.isKinematic = true;
             }
 
+            // Debug.Log("[NetTest] Before move: " + MainTransform.position);
+            // MainTransform.position = standPos;
+            // Debug.Log("[NetTest] After move: " + MainTransform.position);
+            animator.applyRootMotion = false;
+            MainTransform.position = standPos;
             MainRigidbody.isKinematic = false;
             Hitbox.enabled = true;
             animator.enabled = true;
 
+            MainCam.enabled = true;
+            MainCamAudio.enabled = true;
+            RagCam.enabled=false;
+            RagCamAudio.enabled=false;
     }
+
+    
 
         public void SpecialRagdollOn(Vector3 forceDir)
     {
@@ -128,6 +154,11 @@ public class RagdollController : NetworkBehaviour
                 limb.AddForce(forceDir*FlyMultiplier, ForceMode.Impulse);
             }
             
+            MainCam.enabled = false;
+            MainCamAudio.enabled = false;
+            RagCam.enabled=true;
+            RagCamAudio.enabled=true;
+
     }
 
 
@@ -174,4 +205,51 @@ public class RagdollController : NetworkBehaviour
         }
     }
 
+    public void TryStand()
+    {
+        Vector3 pelvisPos = pelvis.position;
+
+        Vector3 bottom = pelvis.position + Vector3.up * standheight;
+        Vector3 top = bottom + Vector3.up * checkheight; 
+        float radius = 0.4f; 
+
+        if (!Physics.CheckCapsule(bottom, top, radius, collisionMask))
+        {
+            Vector3 standPos = bottom + Vector3.up * standheight;
+            RagdollOff(standPos);
+            return;
+        }
+
+        
+        float searchRadius = searchStep; 
+        while (searchRadius <= 20f) //change float to increase search radius. obviously.
+        {   
+            int points = 16;
+            for (int i = 0; i < points; i++)
+            {
+                float angle = i * Mathf.PI * 2f / points;
+                Vector3 offset = new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle)) * searchRadius;
+                Vector3 candidatePos = pelvisPos + offset;
+
+                Vector3 bottomCandidate = candidatePos + Vector3.up * standheight;
+                Vector3 topCandidate = bottomCandidate + Vector3.up * checkheight;
+
+                
+                if (!Physics.CheckCapsule(bottomCandidate, topCandidate, radius, collisionMask))
+                {
+                    Vector3 standPos = bottomCandidate + Vector3.up * standheight;
+                    RagdollOff(standPos);
+                    return;
+                }
+            }
+
+            searchRadius += searchStep;
+        }
+    }
 }
+
+
+
+
+    
+
