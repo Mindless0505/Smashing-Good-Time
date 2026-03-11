@@ -50,7 +50,7 @@ public class SledgeAttack : NetworkBehaviour
             return;
         }
 
-        if(VisualActive=true)
+        if(VisualActive==true)
         {
 
             if(Input.GetMouseButtonDown(0))
@@ -104,7 +104,7 @@ public class SledgeAttack : NetworkBehaviour
 
     void AttackRaycast()
     {
-        if(VisualActive= true)
+        if(VisualActive==true)
         {
             
             if(Physics.Raycast(cam.transform.position, cam.transform.forward, out RaycastHit hit, attackDistance, attackLayer))
