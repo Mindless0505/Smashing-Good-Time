@@ -13,6 +13,7 @@ public class PlayerMovement : NetworkBehaviour
     public float moveSpeed;
     public float originalMoveSpeed;
     public float sprintSpeed;
+    bool isSprinting;
     public float crouchSpeed;
     public float groundDrag;
 
@@ -97,9 +98,14 @@ public class PlayerMovement : NetworkBehaviour
         
 
         // Sprint
-        if (Input.GetKey(sprintKey))
+        if (Input.GetKey(sprintKey) && grounded)
         {
             Sprint();
+            isSprinting = true;
+        }
+        else
+        {
+            isSprinting = false;
         }
 
         // Crouch (overrides sprint if both pressed)
@@ -155,19 +161,14 @@ public class PlayerMovement : NetworkBehaviour
     }
 
     private void HandleFOV()
-    {
-        float targetFOV = normalFOV;
+{
+    float targetFOV = isSprinting ? sprintFOV : normalFOV;
 
-        if (Input.GetKey(sprintKey) && grounded)
-        {
-            targetFOV = sprintFOV;
-        }
-
-        playerCamera.fieldOfView = Mathf.Lerp(
-            playerCamera.fieldOfView,
-            targetFOV,
-            Time.deltaTime * fovSpeed
-        );
-    }
+    playerCamera.fieldOfView = Mathf.Lerp(
+        playerCamera.fieldOfView,
+        targetFOV,
+        Time.deltaTime * fovSpeed
+    );
+}
 
 }
