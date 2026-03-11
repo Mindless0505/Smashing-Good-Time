@@ -267,6 +267,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4679459014627008734}
+  - component: {fileID: 3628419788540971921}
   m_Layer: 9
   m_Name: RagCamPivot
   m_TagString: Untagged
@@ -290,6 +291,22 @@ Transform:
   - {fileID: 5697479344268266362}
   m_Father: {fileID: 3183915106961896051}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3628419788540971921
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1578379976099018518}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 52a563eeb45fe43b7a3892081edb232c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  target: {fileID: 5474131117020670081}
+  offset: {x: 0, y: 2, z: -4}
+  smoothSpeed: 5
+  lookAtTarget: 1
 --- !u!1 &1917571613396525886
 GameObject:
   m_ObjectHideFlags: 0
@@ -845,6 +862,8 @@ GameObject:
   - component: {fileID: 3017676486507899173}
   - component: {fileID: 8255810581160359240}
   - component: {fileID: 5814671110058460323}
+  - component: {fileID: 8242968315164493657}
+  - component: {fileID: 8132027888090939080}
   m_Layer: 9
   m_Name: RagCam
   m_TagString: Untagged
@@ -970,6 +989,44 @@ MonoBehaviour:
     m_MipBias: 0
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
+--- !u!114 &8242968315164493657
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7743251016003614241}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4babe07a007ed4376b4a15c2fc34c67c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  sensX: 800
+  sensY: 800
+  orientation: {fileID: 7652167074971804034}
+  xRotation: 0
+  yRotation: 0
+--- !u!114 &8132027888090939080
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7743251016003614241}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01b7abe88fe8a4d3cafd9c182bc7038c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  sensX: 800
+  sensY: 800
+  orientation: {fileID: 7652167074971804034}
+  target: {fileID: 5474131117020670081}
+  distance: 5
+  xRotation: 0
+  yRotation: 0
 --- !u!1 &9041923656687872667
 GameObject:
   m_ObjectHideFlags: 0
@@ -1407,9 +1464,6 @@ MonoBehaviour:
   MainCamAudio: {fileID: 9064872932211963122}
   RagCam: {fileID: 3017676486507899173}
   RagCamAudio: {fileID: 8255810581160359240}
-  ragdollRigidbody: {fileID: 4906519892050198013}
-  distanceBehind: 3
-  heightAbove: 0.3
 --- !u!114 &5411376580419281271
 MonoBehaviour:
   m_ObjectHideFlags: 0
