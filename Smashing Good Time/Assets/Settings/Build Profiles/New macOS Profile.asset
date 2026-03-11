@@ -10,14 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 15003, guid: 0000000000000000e000000000000000, type: 0}
-  m_Name: New Windows Profile
+  m_Name: New macOS Profile
   m_EditorClassIdentifier: 
   m_AssetVersion: 1
-  m_BuildTarget: 19
+  m_BuildTarget: 2
   m_Subtarget: 2
-  m_PlatformId: 4e3c793746204150860bf175a9a41a05
+  m_PlatformId: 0d2129357eac403d8b359c2dcbf82502
   m_PlatformBuildProfile:
-    rid: 9028959222433579090
+    rid: 8970331795350880334
   m_OverrideGlobalSceneList: 0
   m_Scenes: []
   m_ScriptingDefines: []
@@ -164,9 +164,7 @@ MonoBehaviour:
     - line: '|   visionOSBundleVersion: 1.0'
     - line: '|   tvOSBundleVersion: 1.0'
     - line: '|   bundleVersion: 0.1.0'
-    - line: '|   preloadedAssets:'
-    - line: '|   - {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b,
-        type: 3}'
+    - line: '|   preloadedAssets: []'
     - line: '|   metroInputSource: 0'
     - line: '|   wsaTransparentSwapchain: 0'
     - line: '|   m_HolographicPauseOnTrackingLoss: 1'
@@ -974,10 +972,8 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
-    - rid: 9028959222433579090
-      type: {class: WindowsPlatformSettings, ns: UnityEditor.WindowsStandalone, asm: UnityEditor.WindowsStandalone.Extensions}
+    - rid: 8970331795350880334
+      type: {class: OSXStandaloneBuildProfile, ns: UnityEditor.OSXStandalone, asm: UnityEditor.OSXStandalone.Extensions}
       data:
         m_Development: 0
         m_ConnectProfiler: 0
@@ -990,9 +986,6 @@ MonoBehaviour:
         m_ExplicitArrayBoundsChecks: 0
         m_CompressionType: 0
         m_InstallInBuildFolder: 0
-        m_WindowsBuildAndRunDeployTarget: 0
-        m_Architecture: 0
-        m_CreateSolution: 0
-        m_CopyPDBFiles: 0
-        m_WindowsDevicePortalAddress: 
-        m_WindowsDevicePortalUsername: 
+        m_MacOSXcodeBuildConfig: 1
+        m_Architecture: 2
+        m_CreateXcodeProject: 0
