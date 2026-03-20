@@ -85,42 +85,59 @@ public class TestNetcodeUI : MonoBehaviour
     {
         try
         {
-            Log("Creating Relay allocation...");
-            Allocation allocation = await RelayService.Instance.CreateAllocationAsync(4);
-            string relayCode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
+            Log("Host Step 1: Checking NetworkManager...");
+            if (NetworkManager.Singleton == null) { LogError("NetworkManager is null!"); return; }
 
-            // Configure transport
+            Log("Host Step 2: Checking UnityTransport...");
             var transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
-            transport.UseWebSockets = true; 
-            transport.SetRelayServerData(
+            if (transport == null) { LogError("UnityTransport is null!"); return; }
+
+            Log("Host Step 3: Checking RelayService...");
+            if (RelayService.Instance == null) { LogError("RelayService is null!"); return; }
+
+            Log("Host Step 4: Creating Relay allocation...");
+            Allocation allocation = await RelayService.Instance.CreateAllocationAsync(4, null);
+            if (allocation == null) { LogError("Allocation is null!"); return; }
+
+            Log("Host Step 5: Getting join code...");
+            string relayCode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
+            if (string.IsNullOrEmpty(relayCode)) { LogError("Relay code is null or empty!"); return; }
+            Log("Relay code: " + relayCode);
+
+            Log("Host Step 6: Building RelayServerData...");
+            if (allocation.RelayServer == null) { LogError("RelayServer is null!"); return; }
+            var relayServerData = new RelayServerData(
                 allocation.RelayServer.IpV4,
                 (ushort)allocation.RelayServer.Port,
                 allocation.AllocationIdBytes,
-                allocation.Key,
                 allocation.ConnectionData,
-                null,
-                true
+                allocation.ConnectionData,  // host uses ConnectionData for both
+                allocation.Key,
+                true,   // isSecure
+                true    // isWebSocket
             );
+            transport.SetRelayServerData(relayServerData);
 
-            // Create Lobby
+            Log("Host Step 7: Setting transport data...");
+            transport.SetRelayServerData(relayServerData);
+
+            Log("Host Step 8: Creating lobby...");
+            if (LobbyService.Instance == null) { LogError("LobbyService is null!"); return; }
             var options = new CreateLobbyOptions
             {
                 Data = new Dictionary<string, DataObject>
-                {
-                    // FIX 2: Change Member → Public so joining players can read it immediately
-                    { "relayCode", new DataObject(DataObject.VisibilityOptions.Public, relayCode) }
-                }
+            {
+                { "relayCode", new DataObject(DataObject.VisibilityOptions.Public, relayCode) }
+            }
             };
-
             currentLobby = await LobbyService.Instance.CreateLobbyAsync("My Lobby", 4, options);
+            if (currentLobby == null) { LogError("Lobby creation returned null!"); return; }
+            Log("Lobby created! Code: " + currentLobby.LobbyCode);
 
-            Log("Lobby created! Code: " + currentLobby.LobbyCode + " | Relay code: " + relayCode);
-
-            // Start host
+            Log("Host Step 9: Starting NetworkManager host...");
             NetworkManager.Singleton.StartHost();
-            Log("Host started!");
+            Log("Host started successfully!");
 
-            // Start heartbeat
             StartCoroutine(Heartbeat(currentLobby.Id));
         }
         catch (System.Exception e)
@@ -176,16 +193,17 @@ public class TestNetcodeUI : MonoBehaviour
 
             // Configure transport
             var transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
-            transport.UseWebSockets = true; 
-            transport.SetRelayServerData(
+            var relayServerData = new RelayServerData(
                 joinAllocation.RelayServer.IpV4,
                 (ushort)joinAllocation.RelayServer.Port,
                 joinAllocation.AllocationIdBytes,
-                joinAllocation.Key,
                 joinAllocation.ConnectionData,
                 joinAllocation.HostConnectionData,
-                true
+                joinAllocation.Key,
+                true,   // isSecure
+                true    // isWebSocket
             );
+            transport.SetRelayServerData(relayServerData);
 
             NetworkManager.Singleton.StartClient();
             Log("Client started!");
