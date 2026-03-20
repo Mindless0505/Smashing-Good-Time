@@ -91,13 +91,14 @@ public class TestNetcodeUI : MonoBehaviour
 
             // Configure transport
             var transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
+            transport.UseWebSockets = true; 
             transport.SetRelayServerData(
                 allocation.RelayServer.IpV4,
                 (ushort)allocation.RelayServer.Port,
                 allocation.AllocationIdBytes,
                 allocation.Key,
                 allocation.ConnectionData,
-                null, // host
+                null,
                 true
             );
 
@@ -175,6 +176,7 @@ public class TestNetcodeUI : MonoBehaviour
 
             // Configure transport
             var transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
+            transport.UseWebSockets = true; 
             transport.SetRelayServerData(
                 joinAllocation.RelayServer.IpV4,
                 (ushort)joinAllocation.RelayServer.Port,
