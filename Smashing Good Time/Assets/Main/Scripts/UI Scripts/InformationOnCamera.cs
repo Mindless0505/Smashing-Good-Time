@@ -9,7 +9,7 @@ public class InformationOnCamera : MonoBehaviour
     private void Awake()
     {
         // Find NetcodeUI in the scene
-        netcodeUI = FindObjectOfType<TestNetcodeUI>();
+        netcodeUI = Object.FindFirstObjectByType<TestNetcodeUI>();
         if (netcodeUI == null)
         {
             Debug.LogError("No TestNetcodeUI found in scene!");
@@ -28,7 +28,7 @@ public class InformationOnCamera : MonoBehaviour
         if (netcodeUI == null || lobbyCodeText == null) return;
 
         // Update text
-        lobbyCodeText.text = "Lobby Code: " + netcodeUI.CurrentLobbyCode;
+        lobbyCodeText.text = "Lobby Code: " + netcodeUI.CurrentLobbyCode + "Relay Code" + netcodeUI.RelayCode;
 
     
     }

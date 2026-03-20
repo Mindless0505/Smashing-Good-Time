@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using Unity.Netcode;
@@ -48,6 +48,13 @@ public class TestNetcodeUI : MonoBehaviour
         {
             Log("Initializing Unity Services...");
             await UnityServices.InitializeAsync();
+
+            // Force a unique identity for each instance
+            if (AuthenticationService.Instance.IsSignedIn)
+                AuthenticationService.Instance.SignOut();
+
+            AuthenticationService.Instance.ClearSessionToken();
+
             await AuthenticationService.Instance.SignInAnonymouslyAsync();
             Log("Signed in! Player ID: " + AuthenticationService.Instance.PlayerId);
         }
@@ -99,7 +106,8 @@ public class TestNetcodeUI : MonoBehaviour
             {
                 Data = new Dictionary<string, DataObject>
                 {
-                    { "relayCode", new DataObject(DataObject.VisibilityOptions.Member, relayCode) }
+                    // FIX 2: Change Member → Public so joining players can read it immediately
+                    { "relayCode", new DataObject(DataObject.VisibilityOptions.Public, relayCode) }
                 }
             };
 
@@ -134,19 +142,33 @@ public class TestNetcodeUI : MonoBehaviour
             Lobby lobby = await LobbyService.Instance.JoinLobbyByCodeAsync(code);
             Log("Lobby joined! Players: " + lobby.Players.Count);
 
-            // Wait a short delay to ensure lobby data propagates
-            await Task.Delay(500);
+            // --- FIX 1: Poll until relay code is available ---
+            string relayCode = null;
+            int maxAttempts = 10;
 
-            // Check relay code exists
-            if (!lobby.Data.ContainsKey("relayCode"))
+            for (int i = 0; i < maxAttempts; i++)
             {
-                LogError("Relay code not found in lobby data");
+                lobby = await LobbyService.Instance.GetLobbyAsync(lobby.Id);
+
+                if (lobby.Data != null &&
+                    lobby.Data.ContainsKey("relayCode") &&
+                    !string.IsNullOrEmpty(lobby.Data["relayCode"].Value))
+                {
+                    relayCode = lobby.Data["relayCode"].Value;
+                    Log($"Relay code retrieved on attempt {i + 1}: {relayCode}");
+                    break;
+                }
+
+                Log($"Relay code not ready yet, attempt {i + 1}/{maxAttempts}. Retrying...");
+                await Task.Delay(1000);
+            }
+
+            if (string.IsNullOrEmpty(relayCode))
+            {
+                LogError("Relay code never became available after polling.");
                 hasClientStarted = false;
                 return;
             }
-
-            string relayCode = lobby.Data["relayCode"].Value;
-            Log("Relay code retrieved: " + relayCode);
 
             // Join Relay
             JoinAllocation joinAllocation = await RelayService.Instance.JoinAllocationAsync(relayCode);
@@ -163,7 +185,6 @@ public class TestNetcodeUI : MonoBehaviour
                 true
             );
 
-            // Start client
             NetworkManager.Singleton.StartClient();
             Log("Client started!");
         }
@@ -203,6 +224,21 @@ public class TestNetcodeUI : MonoBehaviour
         get
         {
             return currentLobby != null ? currentLobby.LobbyCode : string.Empty;
+        }
+    }
+    public string RelayCode
+    {
+        get
+        {
+            // Fix: Retrieve relayCode from currentLobby.Data dictionary
+            if (currentLobby != null &&
+                currentLobby.Data != null &&
+                currentLobby.Data.ContainsKey("relayCode") &&
+                !string.IsNullOrEmpty(currentLobby.Data["relayCode"].Value))
+            {
+                return currentLobby.Data["relayCode"].Value;
+            }
+            return string.Empty;
         }
     }
 }
