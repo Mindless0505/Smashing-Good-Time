@@ -10,6 +10,7 @@ public class RagdollController : NetworkBehaviour
     public Transform pelvis;
     public Collider Hitbox; 
     public Rigidbody MainRigidbody;
+    public Rigidbody PelvisRigidbody;
     public bool RagMode = false;
     public Transform MainTransform;
     
@@ -20,7 +21,7 @@ public class RagdollController : NetworkBehaviour
     public float maxSearchRadius = 1f;
     public LayerMask collisionMask;
 
-    [SerializeField] private float requiredImpact = 5f;
+    [SerializeField] private float requiredImpact = 15f;
 
     private Vector3 SavedVelocity;
     private Vector3 SavedAngularVelocity;
@@ -52,7 +53,7 @@ public class RagdollController : NetworkBehaviour
         if (impactStrength >= requiredImpact)
         {
 
-            CaptureVelocity();
+            CaptureVelocityMain();
             RagdollOn();
         }
     }
@@ -92,7 +93,7 @@ public class RagdollController : NetworkBehaviour
             }
 
             MainRigidbody.isKinematic = true;
-            SetVelocity();
+            SetVelocityToRag();
 
             MainCam.enabled = false;
             MainCamAudio.enabled = false;
@@ -105,10 +106,7 @@ public class RagdollController : NetworkBehaviour
 
         void RagdollOff(Vector3 standPos)
     {
-
-            RagMode = false;
-            
-            // HitboxBringItBack();
+            CaptureVelocityRag();
 
             foreach(Collider col in ragdollColliders)
             {
@@ -120,14 +118,15 @@ public class RagdollController : NetworkBehaviour
                 rigid.isKinematic = true;
             }
 
-            // Debug.Log("[NetTest] Before move: " + MainTransform.position);
-            // MainTransform.position = standPos;
-            // Debug.Log("[NetTest] After move: " + MainTransform.position);
+            RagMode = false;
+
             animator.applyRootMotion = false;
             MainTransform.position = standPos;
             MainRigidbody.isKinematic = false;
             Hitbox.enabled = true;
             animator.enabled = true;
+
+            SetVelocityToMain();
 
             MainCam.enabled = true;
             MainCamAudio.enabled = true;
@@ -154,13 +153,13 @@ public class RagdollController : NetworkBehaviour
             {
                 rigid.isKinematic = false;
             }
-
+            SetVelocityToRag();
             MainRigidbody.isKinematic = true;
             foreach (Rigidbody limb in limbsRigidbodies)
             {
                 limb.AddForce(forceDir*FlyMultiplier, ForceMode.Impulse);
             }
-
+            
             MainCam.enabled = false;
             MainCamAudio.enabled = false;
             RagCam.enabled=true;
@@ -188,13 +187,18 @@ public class RagdollController : NetworkBehaviour
     Hitbox.transform.rotation = Quaternion.Euler(0f, euler.y, 0f);
 }
 
-    public void CaptureVelocity()
+    public void CaptureVelocityMain()//capture velocity of main body
     {
         SavedVelocity = MainRigidbody.linearVelocity;
         SavedAngularVelocity = MainRigidbody.angularVelocity;
     }
+    public void CaptureVelocityRag()//capture velocity when ragdolled
+    {
+        SavedVelocity = PelvisRigidbody.linearVelocity;
+        SavedAngularVelocity = PelvisRigidbody.angularVelocity;
+    }
 
-    void SetVelocity()
+    void SetVelocityToRag()//set velocity of ragdoll
     {
         foreach (Rigidbody rb in limbsRigidbodies)
         {
@@ -202,12 +206,16 @@ public class RagdollController : NetworkBehaviour
             rb.angularVelocity = SavedAngularVelocity;
         }
     }
+    void SetVelocityToMain()//sets velocity of main body
+    {
+        MainRigidbody.AddForce(SavedVelocity, ForceMode.VelocityChange);
+    }
 
     public void RecieveHit(Vector3 forceDir)
     {
         if (!RagMode)
         {
-            CaptureVelocity();
+            CaptureVelocityMain();
             SpecialRagdollOn(forceDir);
 
 

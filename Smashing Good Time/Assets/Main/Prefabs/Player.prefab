@@ -1580,6 +1580,7 @@ MonoBehaviour:
   pelvis: {fileID: 5474131117020670081}
   Hitbox: {fileID: 9127887918834154567}
   MainRigidbody: {fileID: 3881939328768132254}
+  PelvisRigidbody: {fileID: 4906519892050198013}
   RagMode: 0
   MainTransform: {fileID: 3183915106961896051}
   standheight: 0.8
@@ -1590,7 +1591,7 @@ MonoBehaviour:
   collisionMask:
     serializedVersion: 2
     m_Bits: 640
-  requiredImpact: 5
+  requiredImpact: 15
   FlyMultiplier: 25
   MainCam: {fileID: 6809821254135934710}
   MainCamAudio: {fileID: 9064872932211963122}
