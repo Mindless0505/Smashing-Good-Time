@@ -123,8 +123,8 @@ public class TestNetcodeUI : MonoBehaviour
                 allocation.ConnectionData,
                 allocation.ConnectionData,  // host uses ConnectionData for both
                 allocation.Key,
-                true,   // isSecure
-                true    // isWebSocket
+                false,   // isSecure
+                false    // isWebSocket
             );
 
             Log("Host Step 7: Setting transport data...");
@@ -149,7 +149,7 @@ public class TestNetcodeUI : MonoBehaviour
 
             NetworkManager.Singleton.OnTransportFailure += () =>
             {
-                LogError("HOST TRANSPORT FAILED!");
+                LogError("HOST TRANSPORT FAILED! - this invalidates the relay!");
             };
 
             NetworkManager.Singleton.OnClientConnectedCallback += (clientId) =>
@@ -232,8 +232,8 @@ public class TestNetcodeUI : MonoBehaviour
                 joinAllocation.ConnectionData,
                 joinAllocation.HostConnectionData,
                 joinAllocation.Key,
-                true,   // isSecure
-                true    // isWebSocket
+                false,   // isSecure
+                false    // isWebSocket
             );
             transport.SetRelayServerData(relayServerData);
 
