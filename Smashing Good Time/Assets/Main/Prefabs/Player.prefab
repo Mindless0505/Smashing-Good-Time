@@ -1181,9 +1181,10 @@ GameObject:
   - component: {fileID: 9127887918834154567}
   - component: {fileID: 1427902085583495070}
   - component: {fileID: 5411376580419281271}
+  - component: {fileID: 1079221771382185049}
   m_Layer: 9
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1619,6 +1620,19 @@ MonoBehaviour:
   respawnPoint: {fileID: 0}
   respawnDelay: 3
   lives: 999
+--- !u!114 &1079221771382185049
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9041923656687872667}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6005aa34385ecc45a4895dd98668f2b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
 --- !u!1001 &484866321443317865
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -9,24 +9,18 @@ public class Grab : NetworkBehaviour
     public float holdDistance = 3f;     // where the object is held
     public float grabForce = 800f;      // how strong the pull is
     public float dropForceLimit = 30f;  // max force before dropping
-    // public float maxGrabMass = 15f;
-
     public float throwForce= 1f;
 
     public float adjustedGrabForce;
     public float adjustedDropLimit;
     
     public SledgeAttack Sledge;
-
     public LayerMask grabLayer;
 
     public Rigidbody heldObject;
     float distanceToObject;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
+    private SharedPhysics heldSharedPhysics;
+
 
     // Update is called once per frame
     void Update()
@@ -57,6 +51,8 @@ public class Grab : NetworkBehaviour
         {
             if (hit.rigidbody != null)
             {
+                heldSharedPhysics = hit.rigidbody.GetComponent<SharedPhysics>();
+                if (heldSharedPhysics == null) return; // only grab objects with SharedPhysics
 
                 Sledge.SetVisualsActive(false);
 
@@ -74,19 +70,16 @@ public class Grab : NetworkBehaviour
 
     void FixedUpdate()
     {
+        if (!IsOwner) return;
         if (heldObject != null)
         {
             Vector3 holdPoint = cam.transform.position + cam.transform.forward * holdDistance;
             Vector3 toHold = holdPoint - heldObject.position;
 
             // Apply force toward hold position
-            heldObject.AddForce(toHold * adjustedGrabForce * Time.fixedDeltaTime, ForceMode.Acceleration);
+            heldSharedPhysics.ApplyForceServerRpc(toHold * adjustedGrabForce * Time.fixedDeltaTime, ForceMode.Acceleration);
 
-
-        // Quaternion targetRot = Quaternion.LookRotation(cam.transform.forward);
-        // heldObject.MoveRotation(Quaternion.Slerp(heldObject.rotation, targetRot, Time.fixedDeltaTime * 5f));
-
-            // Drop if object fights too hard
+            
             if (heldObject.linearVelocity.magnitude > adjustedDropLimit || toHold.magnitude > grabDistance * 1.15f)
             {
                 DropObject();
@@ -104,10 +97,11 @@ public class Grab : NetworkBehaviour
 
         if(heldObject == null) return;
 
-        heldObject.useGravity = true;
-        heldObject.linearDamping = 0f;
-        heldObject = null;
 
+        SetGravityServerRpc(heldSharedPhysics.GetComponent<NetworkObject>(), true, 0f);
+
+        heldSharedPhysics = null;
+        heldObject = null;
         Sledge.SetVisualsActive(true);
     }
 
@@ -126,9 +120,18 @@ public class Grab : NetworkBehaviour
 
     void ThrowObject()
     {
-        heldObject.useGravity = true;
-        heldObject.AddForce(cam.transform.forward * throwForce, ForceMode.Force);
+        heldSharedPhysics.ApplyForceServerRpc(cam.transform.forward * throwForce, ForceMode.Force);
         DropObject();
+    }
+
+    [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
+    void SetGravityServerRpc(NetworkObjectReference netObjRef, bool useGravity, float drag)
+    {
+        if (!netObjRef.TryGet(out NetworkObject netObj)) return;
+        Rigidbody rb = netObj.GetComponent<Rigidbody>();
+        if (rb == null) return;
+        rb.useGravity = useGravity;
+        rb.linearDamping = drag;
     }
 
 }
