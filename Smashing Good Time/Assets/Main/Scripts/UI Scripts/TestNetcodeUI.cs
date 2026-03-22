@@ -205,10 +205,14 @@ public class TestNetcodeUI : MonoBehaviour
 
             Log("Client auth token valid: " + AuthenticationService.Instance.IsAuthorized);
             Log("Client access token empty: " + string.IsNullOrEmpty(AuthenticationService.Instance.AccessToken));
-            // Join Relay
+            Log("Testing relay service accessibility...");
+            var regions = await RelayService.Instance.ListRegionsAsync();
+            foreach (var region in regions)
+            {
+                Log("Available region: " + region.Id);
+            }
             Log("About to join relay...");
             JoinAllocation joinAllocation = await RelayService.Instance.JoinAllocationAsync(relayCode);
-
             Log("Relay joined!");
 
             // Configure transport
