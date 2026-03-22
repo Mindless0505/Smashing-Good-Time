@@ -147,6 +147,16 @@ public class TestNetcodeUI : MonoBehaviour
             NetworkManager.Singleton.StartHost();
             Log("Host started successfully!");
 
+            NetworkManager.Singleton.OnTransportFailure += () =>
+            {
+                LogError("HOST TRANSPORT FAILED!");
+            };
+
+            NetworkManager.Singleton.OnClientConnectedCallback += (clientId) =>
+            {
+                Log("Client connected! ID: " + clientId);
+            };
+
             StartCoroutine(Heartbeat(currentLobby.Id));
         }
         catch (System.Exception e)
