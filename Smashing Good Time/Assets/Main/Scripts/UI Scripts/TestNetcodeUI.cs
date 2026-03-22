@@ -204,7 +204,9 @@ public class TestNetcodeUI : MonoBehaviour
             Log("CLIENT project ID: " + Application.cloudProjectId);
 
             // Join Relay
-            JoinAllocation joinAllocation = await RelayService.Instance.JoinAllocationAsync(relayCode);
+            Log("About to join relay...");
+            JoinAllocation joinAllocation = await RelayService.Instance.JoinAllocationAsync(joinCode: relayCode);
+            Log("Relay joined!");
 
             // Configure transport
             var transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
