@@ -66,13 +66,35 @@ public class SledgeAttack : NetworkBehaviour
 
     public void SetVisualsActive(bool active)
     {
-        VisualActive = active;
-        // Get all Renderer components in parent and children
-        Renderer[] renderers = sledgeHammer.GetComponentsInChildren<Renderer>();
+        if (IsSpawned)
+        {
+            SetVisualsActiveServerRpc(active);
+        }
+        else
+        {
+            ApplyVisuals(active);
+        }
+    }
 
+    [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
+    private void SetVisualsActiveServerRpc(bool active)
+    {
+        SetVisualsActiveClientRpc(active);
+    }
+
+    [ClientRpc]
+    private void SetVisualsActiveClientRpc(bool active)
+    {
+        ApplyVisuals(active);
+    }
+
+    private void ApplyVisuals(bool active)
+    {
+        VisualActive = active;
+        Renderer[] renderers = sledgeHammer.GetComponentsInChildren<Renderer>();
         foreach (Renderer r in renderers)
         {
-            r.enabled = active; // show or hide
+            r.enabled = active;
         }
     }
 
