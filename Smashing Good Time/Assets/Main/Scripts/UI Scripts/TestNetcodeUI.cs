@@ -203,9 +203,12 @@ public class TestNetcodeUI : MonoBehaviour
             Log("CLIENT player ID: " + AuthenticationService.Instance.PlayerId);
             Log("CLIENT project ID: " + Application.cloudProjectId);
 
+            Log("Client auth token valid: " + AuthenticationService.Instance.IsAuthorized);
+            Log("Client access token empty: " + string.IsNullOrEmpty(AuthenticationService.Instance.AccessToken));
             // Join Relay
             Log("About to join relay...");
-            JoinAllocation joinAllocation = await RelayService.Instance.JoinAllocationAsync(joinCode: relayCode);
+            JoinAllocation joinAllocation = await RelayService.Instance.JoinAllocationAsync(relayCode);
+
             Log("Relay joined!");
 
             // Configure transport
