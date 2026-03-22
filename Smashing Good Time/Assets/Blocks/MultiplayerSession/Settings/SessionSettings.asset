@@ -15,7 +15,7 @@ MonoBehaviour:
   maxPlayers: 4
   sessionName: default-session-name
   sessionType: default-session
-  usePlayerName: 1
+  usePlayerName: 0
   createNetworkSession: 0
   networkType: 1
   ipAddress: 127.0.0.1

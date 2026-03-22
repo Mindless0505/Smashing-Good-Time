@@ -49,14 +49,17 @@ public class TestNetcodeUI : MonoBehaviour
             Log("Initializing Unity Services...");
             await UnityServices.InitializeAsync();
 
-            // Force a unique identity for each instance
-            if (AuthenticationService.Instance.IsSignedIn)
-                AuthenticationService.Instance.SignOut();
-
-            AuthenticationService.Instance.ClearSessionToken();
-
-            await AuthenticationService.Instance.SignInAnonymouslyAsync();
-            Log("Signed in! Player ID: " + AuthenticationService.Instance.PlayerId);
+            try
+            {
+                await AuthenticationService.Instance.SignInAnonymouslyAsync();
+                Log("Signed in! Player ID: " + AuthenticationService.Instance.PlayerId);
+            }
+            catch (System.Exception)
+            {
+                // Wait for existing session to fully load
+                await Task.Delay(500);
+                Log("Using existing session. Player ID: " + AuthenticationService.Instance.PlayerId);
+            }
         }
         catch (System.Exception e)
         {
@@ -116,7 +119,6 @@ public class TestNetcodeUI : MonoBehaviour
                 true,   // isSecure
                 true    // isWebSocket
             );
-            transport.SetRelayServerData(relayServerData);
 
             Log("Host Step 7: Setting transport data...");
             transport.SetRelayServerData(relayServerData);
