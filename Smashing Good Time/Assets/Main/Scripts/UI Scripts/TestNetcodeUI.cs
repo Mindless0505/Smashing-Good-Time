@@ -110,6 +110,9 @@ public class TestNetcodeUI : MonoBehaviour
 
             Log("Host Step 5: Getting join code...");
             string relayCode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
+            Log("HOST relay code: " + relayCode);
+            Log("HOST player ID: " + AuthenticationService.Instance.PlayerId);
+            Log("HOST project ID: " + Application.cloudProjectId);
             if (string.IsNullOrEmpty(relayCode)) { LogError("Relay code is null or empty!"); return; }
             Log("Relay code: " + relayCode);
 
@@ -195,6 +198,10 @@ public class TestNetcodeUI : MonoBehaviour
                 hasClientStarted = false;
                 return;
             }
+
+            Log("CLIENT relay code: " + relayCode);
+            Log("CLIENT player ID: " + AuthenticationService.Instance.PlayerId);
+            Log("CLIENT project ID: " + Application.cloudProjectId);
 
             // Join Relay
             JoinAllocation joinAllocation = await RelayService.Instance.JoinAllocationAsync(relayCode);
