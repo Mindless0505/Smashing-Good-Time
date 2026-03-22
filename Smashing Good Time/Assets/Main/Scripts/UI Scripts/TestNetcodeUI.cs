@@ -50,9 +50,7 @@ public class TestNetcodeUI : MonoBehaviour
         try
         {
             Log("Initializing Unity Services...");
-            var options = new InitializationOptions();
-            options.SetEnvironmentName("production");
-            await UnityServices.InitializeAsync(options);
+            await UnityServices.InitializeAsync();
 
             try
             {
@@ -104,7 +102,7 @@ public class TestNetcodeUI : MonoBehaviour
             if (RelayService.Instance == null) { LogError("RelayService is null!"); return; }
 
             Log("Host Step 4: Creating Relay allocation...");
-            Allocation allocation = await RelayService.Instance.CreateAllocationAsync(4, "us-central1");
+            Allocation allocation = await RelayService.Instance.CreateAllocationAsync(4, "us-east1");
             Log("Allocation region: " + allocation.Region);
             if (allocation == null) { LogError("Allocation is null!"); return; }
 
