@@ -132,7 +132,7 @@ public class SledgeAttack : NetworkBehaviour
             if(Physics.Raycast(cam.transform.position, cam.transform.forward, out RaycastHit hit, attackDistance, attackLayer))
             {
 
-                if(hit.transform.root == playerRoot.transform)
+                if(IsOwner && hit.transform.root == playerRoot.transform)
                     return;
 
                 HitTarget(hit);
@@ -150,9 +150,18 @@ public class SledgeAttack : NetworkBehaviour
         {
             Vector3 forceDir = hit.point - cam.transform.position;
             forceDir.Normalize();
+
             if (!rb.CompareTag("Player"))
             {
-                rb.AddForce(forceDir * HammerForce, ForceMode.Impulse);
+                SharedPhysics sp = rb.GetComponent<SharedPhysics>();
+                if (sp != null)
+                {
+                    sp.ApplyForceServerRpc(forceDir * HammerForce, ForceMode.Impulse);
+                }
+                else
+                {
+                    rb.AddForce(forceDir * HammerForce, ForceMode.Impulse); // just in case not networked ;D
+                }
             }
             else
             {
