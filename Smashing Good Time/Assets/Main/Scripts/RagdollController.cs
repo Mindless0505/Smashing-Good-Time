@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
+using Unity.Netcode.Components;
 
 public class RagdollController : NetworkBehaviour
 {
@@ -145,16 +146,16 @@ public class RagdollController : NetworkBehaviour
     }
 
 
-    void RagdollOff(Vector3 standPos)
-    {
-        RagdollOffServerRpc(standPos);
-    }
+    // void RagdollOff(Vector3 standPos)
+    // {
+    //     RagdollOffServerRpc(standPos);
+    // }
 
-    [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
-    private void RagdollOffServerRpc(Vector3 standPos)
-    {
-        RagdollOffClientRpc(standPos);
-    }
+    // [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
+    // private void RagdollOffServerRpc(Vector3 standPos)
+    // {
+    //     RagdollOffClientRpc(standPos);
+    // }
 
     [ClientRpc]
     private void RagdollOffClientRpc(Vector3 standPos)
@@ -174,15 +175,19 @@ public class RagdollController : NetworkBehaviour
         RagMode = false;
         animator.applyRootMotion = false;
 
-        MainTransform.position = standPos;
+        if (IsOwner)
+        {
+            var nt = GetComponent<NetworkTransform>();
+            if (nt != null) nt.Teleport(standPos, MainTransform.rotation, MainTransform.localScale);
+            else MainTransform.position = standPos;
+        }
 
+        MainTransform.position = standPos;
         MainRigidbody.isKinematic = false;
-        MainRigidbody.linearVelocity = Vector3.zero;
-        MainRigidbody.angularVelocity = Vector3.zero;
-        
         Hitbox.enabled = true;
         animator.enabled = true;
-        SetVelocityToMain();
+        // SetVelocityToMain();
+
 
         if (IsOwner)
         {
@@ -191,9 +196,21 @@ public class RagdollController : NetworkBehaviour
             RagCam.enabled = false;
             RagCamAudio.enabled = false;
             Sledge.SetVisualsActive(true);
+            StartCoroutine(ForcePosition(standPos));
         }
-    }
+}
 
+    IEnumerator ForcePosition(Vector3 standPos)
+    {
+        // Hold position for just a few frames to beat the NetworkTransform sync
+        for (int i = 0; i < 3; i++)
+        {
+            MainTransform.position = standPos;
+            yield return null;
+        }
+        // Release with ragdoll momentum
+        MainRigidbody.linearVelocity = SavedVelocity;
+    }
 
     // public void SpecialRagdollOn(Vector3 forceDir)
     // {
@@ -314,35 +331,44 @@ public class RagdollController : NetworkBehaviour
         Vector3 top = bottom + Vector3.up * checkheight;
         float radius = 0.4f;
 
+        Vector3 standPos = Vector3.zero;
+        bool found = false;
+
         if (!Physics.CheckCapsule(bottom, top, radius, collisionMask))
         {
-            Vector3 standPos = bottom + Vector3.up * standheight;
-            RagdollOffServerRpc(standPos);
-            return;
+            standPos = bottom + Vector3.up * standheight;
+            found = true;
         }
-
-        float searchRadius = searchStep;
-        while (searchRadius <= 20f)
+        else
         {
-            int points = 16;
-            for (int i = 0; i < points; i++)
+            float searchRadius = searchStep;
+            while (searchRadius <= 20f)
             {
-                float angle = i * Mathf.PI * 2f / points;
-                Vector3 offset = new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle)) * searchRadius;
-                Vector3 candidatePos = pelvisPos + offset;
-
-                Vector3 bottomCandidate = candidatePos + Vector3.up * standheight;
-                Vector3 topCandidate = bottomCandidate + Vector3.up * checkheight;
-
-                if (!Physics.CheckCapsule(bottomCandidate, topCandidate, radius, collisionMask))
+                int points = 16;
+                for (int i = 0; i < points; i++)
                 {
-                    Vector3 standPos = bottomCandidate + Vector3.up * standheight;
-                    RagdollOffServerRpc(standPos);
-                    return;
+                    float angle = i * Mathf.PI * 2f / points;
+                    Vector3 offset = new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle)) * searchRadius;
+                    Vector3 candidatePos = pelvisPos + offset;
+                    Vector3 bottomCandidate = candidatePos + Vector3.up * standheight;
+                    Vector3 topCandidate = bottomCandidate + Vector3.up * checkheight;
+
+                    if (!Physics.CheckCapsule(bottomCandidate, topCandidate, radius, collisionMask))
+                    {
+                        standPos = bottomCandidate + Vector3.up * standheight;
+                        found = true;
+                        break;
+                    }
                 }
+                if (found) break;
+                searchRadius += searchStep;
             }
-            searchRadius += searchStep;
         }
+
+        if (!found) return;
+
+        MainRigidbody.isKinematic = false;
+        RagdollOffClientRpc(standPos);
     }
 
 }
