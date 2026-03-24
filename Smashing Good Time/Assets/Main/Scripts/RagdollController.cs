@@ -53,6 +53,7 @@ public class RagdollController : NetworkBehaviour
 
     void OnCollisionEnter(Collision collision)
     {
+        
         float impactStrength = collision.relativeVelocity.magnitude;
         if (impactStrength >= requiredImpact)
         {
