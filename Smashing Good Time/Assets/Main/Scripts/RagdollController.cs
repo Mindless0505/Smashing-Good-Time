@@ -55,11 +55,11 @@ public class RagdollController : NetworkBehaviour
     {
         
         float impactStrength = collision.relativeVelocity.magnitude;
-        if (impactStrength >= requiredImpact)
+        if (impactStrength >= requiredImpact && collision.gameObject.CompareTag("Throwable"))
         {
-
+            Vector3 blockDirection = collision.impulse.normalized;
             CaptureVelocityMain();
-            RagdollOn();
+            RecieveHitServerRpc(blockDirection, 4);
         }
     }
 
@@ -108,43 +108,46 @@ public class RagdollController : NetworkBehaviour
     }
 
 
-    public void RagdollOn()
-    {
-        RagdollOnServerRpc();
-    }
+    // public void RagdollOn()
+    // {
+    //     RagdollOnServerRpc();
+    // }
 
-    [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
-    private void RagdollOnServerRpc()
-    {
-        RagdollOnClientRpc();
-    }
+    // [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
+    // private void RagdollOnServerRpc()
+    // {
+    //     RagdollOnClientRpc();
+    // }
 
-    [ClientRpc]
-    private void RagdollOnClientRpc()
-    {
-        RagMode = true;
-        animator.enabled = false;
-        Hitbox.enabled = false;
+    // [ClientRpc]
+    // private void RagdollOnClientRpc()
+    // {
+    //     RagMode = true;
+    //     animator.enabled = false;
+    //     Hitbox.enabled = false;
 
-        foreach(Collider col in ragdollColliders)
-            col.enabled = true;
+    //     foreach(Collider col in ragdollColliders)
+    //         col.enabled = true;
 
-        foreach (Rigidbody rigid in limbsRigidbodies)
-            rigid.isKinematic = false;
+    //     foreach (Rigidbody rigid in limbsRigidbodies)
+    //         rigid.isKinematic = false;
 
-        MainRigidbody.isKinematic = true;
-        SetVelocityToRag();
+    //     MainRigidbody.isKinematic = true;
+    //     SetVelocityToRag();
 
-        // Cameras only matter for the owner
-        if (IsOwner)
-        {
-            MainCam.enabled = false;
-            MainCamAudio.enabled = false;
-            RagCam.enabled = true;
-            RagCamAudio.enabled = true;
-            Sledge.SetVisualsActive(false);
-        }
-    }
+    //     foreach (Rigidbody limb in limbsRigidbodies)
+    //         limb.AddForce(FlyMultiplier/4, ForceMode.Impulse);
+
+    //     // Cameras only matter for the owner
+    //     if (IsOwner)
+    //     {
+    //         MainCam.enabled = false;
+    //         MainCamAudio.enabled = false;
+    //         RagCam.enabled = true;
+    //         RagCamAudio.enabled = true;
+    //         Sledge.SetVisualsActive(false);
+    //     }
+    // }
 
 
     // void RagdollOff(Vector3 standPos)
@@ -213,20 +216,20 @@ public class RagdollController : NetworkBehaviour
         MainRigidbody.linearVelocity = SavedVelocity;
     }
 
-    // public void SpecialRagdollOn(Vector3 forceDir)
+    // public void SpecialRagdollOn(Vector3 forceDir, int multDiv)
     // {
     //     if (IsOwner)
-    //         SpecialRagdollOnClientRpc(forceDir);
+    //         SpecialRagdollOnClientRpc(forceDir, multDiv);
     // }
 
     [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
-    private void RecieveHitServerRpc(Vector3 forceDir)
+    private void RecieveHitServerRpc(Vector3 forceDir, int multDiv)
     {
-        SpecialRagdollOnClientRpc(forceDir);
+        SpecialRagdollOnClientRpc(forceDir, multDiv);
     }
 
     [ClientRpc]
-    private void SpecialRagdollOnClientRpc(Vector3 forceDir)
+    private void SpecialRagdollOnClientRpc(Vector3 forceDir, int multDiv)
     {
         RagMode = true;
         animator.enabled = false;
@@ -242,7 +245,7 @@ public class RagdollController : NetworkBehaviour
         MainRigidbody.isKinematic = true;
 
         foreach (Rigidbody limb in limbsRigidbodies)
-            limb.AddForce(forceDir * FlyMultiplier, ForceMode.Impulse);
+            limb.AddForce(forceDir * FlyMultiplier/multDiv, ForceMode.Impulse);
 
         if (IsOwner)
         {
@@ -253,6 +256,17 @@ public class RagdollController : NetworkBehaviour
             Sledge.SetVisualsActive(false);
         }
     }
+
+    
+    public void RecieveHit(Vector3 forceDir, int multDiv)
+    {
+        if (!RagMode)
+        {
+            CaptureVelocityMain();
+            RecieveHitServerRpc(forceDir, multDiv);
+        }
+    }
+
 
 
 
@@ -301,20 +315,6 @@ public class RagdollController : NetworkBehaviour
     {
         MainRigidbody.AddForce(SavedVelocity, ForceMode.VelocityChange);
     }
-
-
-
-
-    public void RecieveHit(Vector3 forceDir)
-    {
-        if (!RagMode)
-        {
-            CaptureVelocityMain();
-            RecieveHitServerRpc(forceDir);
-        }
-    }
-
-
 
 
 

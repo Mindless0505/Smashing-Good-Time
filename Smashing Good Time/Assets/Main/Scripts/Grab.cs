@@ -7,8 +7,8 @@ public class Grab : NetworkBehaviour
     public Camera cam;
     public float grabDistance = 2f;     // how far you can grab things
     public float holdDistance = 3f;     // where the object is held
-    public float grabForce = 800f;      // how strong the pull is
-    public float dropForceLimit = 30f;  // max force before dropping
+    public float grabForce = 20f;      // how strong the pull is
+    public float dropForceLimit = 100f;  // max force before dropping
     public float throwForce= 1f;
 
     public float adjustedGrabForce;
@@ -58,12 +58,13 @@ public class Grab : NetworkBehaviour
 
                 heldObject = hit.rigidbody;
                 heldObject.useGravity = false;
-                heldObject.linearDamping = 1f; // smoother control
+                heldObject.linearDamping = 3f; // smoother control
+                heldObject.angularDamping = 10f;
                 distanceToObject = hit.distance;
 
                 float mass = heldObject.mass;
-                adjustedGrabForce = grabForce / Mathf.Clamp(mass/2, 1f, 20f); 
-                adjustedDropLimit = dropForceLimit / Mathf.Clamp(mass * 0.5f, 1f, 20f);
+                // adjustedGrabForce = grabForce / Mathf.Clamp(mass/2, 1f, 20f); 
+                // adjustedDropLimit = dropForceLimit / Mathf.Clamp(mass * 0.5f, 1f, 20f);
             }
         }
     }
@@ -77,10 +78,12 @@ public class Grab : NetworkBehaviour
             Vector3 toHold = holdPoint - heldObject.position;
 
             // Apply force toward hold position
-            heldSharedPhysics.ApplyForceServerRpc(toHold * adjustedGrabForce * Time.fixedDeltaTime, ForceMode.Acceleration);
-
+            // heldSharedPhysics.ApplyForceServerRpc(toHold * grabForce * Time.fixedDeltaTime, ForceMode.Acceleration);
+            float snapSpeed = Mathf.Clamp(toHold.magnitude * grabForce, 0f, 15f);
+            Vector3 targetVelocity = toHold * snapSpeed;
+            heldSharedPhysics.ApplyForceServerRpc(targetVelocity - heldObject.linearVelocity, ForceMode.VelocityChange);
             
-            if (heldObject.linearVelocity.magnitude > adjustedDropLimit || toHold.magnitude > grabDistance * 1.15f)
+            if (heldObject.linearVelocity.magnitude > dropForceLimit || toHold.magnitude > grabDistance * 1.5f)
             {
                 DropObject();
             }
@@ -98,12 +101,19 @@ public class Grab : NetworkBehaviour
         if(heldObject == null) return;
 
 
-        SetGravityServerRpc(heldSharedPhysics.GetComponent<NetworkObject>(), true, 0f);
+        SetGravityServerRpc(heldSharedPhysics.GetComponent<NetworkObject>(), true, 0f, 0.05f);
 
         heldSharedPhysics = null;
         heldObject = null;
         Sledge.SetVisualsActive(true);
     }
+
+    [Rpc(SendTo.Everyone, InvokePermission = RpcInvokePermission.Everyone)]
+    public void ForceDropRpc()
+    {
+        DropObject();
+    }
+
 
     bool IsStandingOn(Rigidbody obj)
     {
@@ -125,13 +135,14 @@ public class Grab : NetworkBehaviour
     }
 
     [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
-    void SetGravityServerRpc(NetworkObjectReference netObjRef, bool useGravity, float drag)
+    void SetGravityServerRpc(NetworkObjectReference netObjRef, bool useGravity, float drag, float angularDrag)
     {
         if (!netObjRef.TryGet(out NetworkObject netObj)) return;
         Rigidbody rb = netObj.GetComponent<Rigidbody>();
         if (rb == null) return;
         rb.useGravity = useGravity;
         rb.linearDamping = drag;
+        rb.angularDamping = angularDrag;
     }
 
 }
