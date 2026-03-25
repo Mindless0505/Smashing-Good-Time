@@ -153,16 +153,7 @@ public class SledgeAttack : NetworkBehaviour
 
             if (!rb.CompareTag("Player"))
             {
-                // // Check if another player is holding this block
-                // Grab[] allGrabbers = FindObjectsByType<Grab>(FindObjectsSortMode.None);
-                // foreach (Grab grabber in allGrabbers)
-                // {
-                //     if (grabber.heldObject == rb)
-                //     {
-                //         grabber.DropObject();
-                //         break;
-                //     }
-                // }
+ 
 
                 SharedPhysics sp = rb.GetComponent<SharedPhysics>();
                 if (sp != null)
