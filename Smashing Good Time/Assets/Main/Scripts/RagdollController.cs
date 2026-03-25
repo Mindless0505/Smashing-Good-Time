@@ -77,7 +77,12 @@ public class RagdollController : NetworkBehaviour
             {
                 TryStand();
             }
-        }   
+        }  
+
+        if (Input.GetKeyDown(KeyCode.R) && animator.enabled)
+        {
+                RagdollOn();
+        }  
     }
 
 
@@ -108,46 +113,44 @@ public class RagdollController : NetworkBehaviour
     }
 
 
-    // public void RagdollOn()
-    // {
-    //     RagdollOnServerRpc();
-    // }
+    public void RagdollOn()
+    {
+        RagdollOnServerRpc();
+    }
 
-    // [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
-    // private void RagdollOnServerRpc()
-    // {
-    //     RagdollOnClientRpc();
-    // }
+    [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
+    private void RagdollOnServerRpc()
+    {
+        RagdollOnClientRpc();
+    }
 
-    // [ClientRpc]
-    // private void RagdollOnClientRpc()
-    // {
-    //     RagMode = true;
-    //     animator.enabled = false;
-    //     Hitbox.enabled = false;
+    [ClientRpc]
+    private void RagdollOnClientRpc()
+    {
+        CaptureVelocityMain();
+        RagMode = true;
+        animator.enabled = false;
+        Hitbox.enabled = false;
 
-    //     foreach(Collider col in ragdollColliders)
-    //         col.enabled = true;
+        foreach(Collider col in ragdollColliders)
+            col.enabled = true;
 
-    //     foreach (Rigidbody rigid in limbsRigidbodies)
-    //         rigid.isKinematic = false;
+        foreach (Rigidbody rigid in limbsRigidbodies)
+            rigid.isKinematic = false;
 
-    //     MainRigidbody.isKinematic = true;
-    //     SetVelocityToRag();
+        MainRigidbody.isKinematic = true;
+        SetVelocityToRag();
 
-    //     foreach (Rigidbody limb in limbsRigidbodies)
-    //         limb.AddForce(FlyMultiplier/4, ForceMode.Impulse);
-
-    //     // Cameras only matter for the owner
-    //     if (IsOwner)
-    //     {
-    //         MainCam.enabled = false;
-    //         MainCamAudio.enabled = false;
-    //         RagCam.enabled = true;
-    //         RagCamAudio.enabled = true;
-    //         Sledge.SetVisualsActive(false);
-    //     }
-    // }
+        // Cameras only matter for the owner
+        if (IsOwner)
+        {
+            MainCam.enabled = false;
+            MainCamAudio.enabled = false;
+            RagCam.enabled = true;
+            RagCamAudio.enabled = true;
+            Sledge.SetVisualsActive(false);
+        }
+    }
 
 
     // void RagdollOff(Vector3 standPos)
