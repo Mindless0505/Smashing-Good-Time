@@ -30,6 +30,9 @@ public class DestructableWall : NetworkBehaviour
         Wallrb = GetComponent<Rigidbody>();
         Wallrb.constraints = RigidbodyConstraints.FreezeAll;
         audioSource = GetComponent<AudioSource>();
+
+        // Ignore all physics interactions between this wall's layer and the Crumbs layer
+        Physics.IgnoreLayerCollision(gameObject.layer, LayerMask.NameToLayer("Crumbs"), true);
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -37,7 +40,6 @@ public class DestructableWall : NetworkBehaviour
         // Only process collisions on the server and if the wall isn't already destroyed
         if (!IsServer || isDestroyed) return;
 
-        if (collision.gameObject.layer == LayerMask.NameToLayer("Crumbs")) return;
         // Calculate the impact strength 
         float impactStrength = collision.relativeVelocity.magnitude;
         requiredHealth -= impactStrength;
