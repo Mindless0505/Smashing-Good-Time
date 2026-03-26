@@ -40,6 +40,9 @@ public class DestructableWall : NetworkBehaviour
         // Only process collisions on the server and if the wall isn't already destroyed
         if (!IsServer || isDestroyed) return;
 
+        // if (collision.gameObject.layer == LayerMask.NameToLayer("Crumbs")) return;
+
+
         // Calculate the impact strength 
         float impactStrength = collision.relativeVelocity.magnitude;
         requiredHealth -= impactStrength;
