@@ -2998,6 +2998,37 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
+--- !u!1 &288721747
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 288721748}
+  m_Layer: 0
+  m_Name: Toon Shader
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &288721748
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 288721747}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 25.0074, y: 8.735358, z: 28.561905}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &299280203 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 3789337362831346163, guid: 7c2d62f28a29fd3468648d3c6e3a8d56, type: 3}
@@ -19409,7 +19440,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: bfc982993ae05fb4dbd8df2be30888e1, type: 2}
+  - {fileID: 2100000, guid: 252c9c71d715ab24188a12b3b7b3fb05, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -19629,6 +19660,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1138742355}
     m_Modifications:
+    - target: {fileID: 7081886925308088839, guid: c7624194d594a2a4e8eb50941ae0901e, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 252c9c71d715ab24188a12b3b7b3fb05, type: 2}
     - target: {fileID: 8218161671867672936, guid: c7624194d594a2a4e8eb50941ae0901e, type: 3}
       propertyPath: m_LocalPosition.x
       value: -8.69
@@ -19770,3 +19805,4 @@ SceneRoots:
   - {fileID: 2098567664}
   - {fileID: 64516655}
   - {fileID: 164245364}
+  - {fileID: 288721748}
