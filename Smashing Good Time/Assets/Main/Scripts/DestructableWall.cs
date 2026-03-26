@@ -4,7 +4,8 @@ using UnityEngine;
 public class DestructableWall : NetworkBehaviour
 {
     [Header("Impact Settings")]
-    public float requiredImpact = 5f;
+    public float requiredImpact = 15f;
+    public float requiredFallImpact = 10f;
     public float requiredHealth = 50f;
 
     // Wall that replaces
@@ -16,10 +17,19 @@ public class DestructableWall : NetworkBehaviour
     private bool isDestroyed = false;
     // Reference to the NetworkObject component
     private NetworkObject netObj;
+    private Rigidbody Wallrb;
+    public LayerMask Crumbs;
+
+    private AudioSource audioSource;
+    [SerializeField] private AudioClip[] impactSounds;
+    [SerializeField] private AudioClip heavyImpactSound;
 
     private void Awake()
     {
         netObj = GetComponent<NetworkObject>();
+        Wallrb = GetComponent<Rigidbody>();
+        Wallrb.constraints = RigidbodyConstraints.FreezeAll;
+        audioSource = GetComponent<AudioSource>();
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -27,18 +37,24 @@ public class DestructableWall : NetworkBehaviour
         // Only process collisions on the server and if the wall isn't already destroyed
         if (!IsServer || isDestroyed) return;
 
+        if (collision.gameObject.layer == LayerMask.NameToLayer("Crumbs")) return;
         // Calculate the impact strength 
         float impactStrength = collision.relativeVelocity.magnitude;
         requiredHealth -= impactStrength;
 
-        // Check if the impact is strong enough to destroy the wall or if the wall's health has been depleted
+        //Check if the impact is strong enough to destroy the wall or if the wall's health has been depleted
+        if (impactStrength >= requiredFallImpact)
+        {
+            Wallrb.constraints = RigidbodyConstraints.None;
+        }
         if (impactStrength >= requiredImpact || requiredHealth <= 0f)
         {
-            DestroyWall();
+            DestroyWall(impactStrength);
+            
         }
     }
 
-    private void DestroyWall()
+    private void DestroyWall(float impactStrength)
     {
         // Prevent multiple destruction calls
         if (isDestroyed) return;
@@ -47,11 +63,14 @@ public class DestructableWall : NetworkBehaviour
         // Spawn fragments locally on the server
         Instantiate(destroyedWallPrefab, transform.position, transform.rotation);
 
+
         // Tell all clients to spawn fragments
         if (IsServer)
         {
             SpawnFragmentsClientRpc(transform.position, transform.rotation);
         }
+
+
 
         // Spawn one object that is on server
         if (IsServer && serverPrefab != null)
@@ -76,6 +95,15 @@ public class DestructableWall : NetworkBehaviour
         {
             // fallback for non-networked objects
             Destroy(gameObject);
+        }
+
+        if (impactStrength >40f)
+        {
+            audioSource.PlayOneShot(heavyImpactSound);
+        }
+        else
+        {
+            AudioSource.PlayClipAtPoint(impactSounds[Random.Range(0, impactSounds.Length)], transform.position);
         }
     }
 
