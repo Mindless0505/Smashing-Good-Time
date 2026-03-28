@@ -170,7 +170,7 @@ public class SledgeAttack : NetworkBehaviour
                 RagdollController ragdoll = hit.transform.root.GetComponent<RagdollController>();
                 if (ragdoll != null)
                 {
-                    ragdoll.RecieveHit(forceDir, 1);
+                    ragdoll.RecieveHit(forceDir , true);
                 }
             }
 

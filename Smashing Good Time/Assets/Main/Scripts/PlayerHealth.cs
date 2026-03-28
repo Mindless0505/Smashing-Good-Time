@@ -1,0 +1,65 @@
+using Cinemachine.Utility;
+using UnityEngine;
+using Random = UnityEngine.Random;
+using Unity.Netcode;
+using System.Collections;
+
+public class PlayerHealth : NetworkBehaviour
+{
+
+    // NetworkVariables automatically sync to all clients
+    public NetworkVariable<int> damPerc = new NetworkVariable<int>(0,
+        NetworkVariableReadPermission.Everyone,
+        NetworkVariableWritePermission.Server);
+
+    public NetworkVariable<int> mult = new NetworkVariable<int>(1,
+        NetworkVariableReadPermission.Everyone,
+        NetworkVariableWritePermission.Server);
+
+
+    // private GameManager gameManager;
+
+    public override void OnNetworkSpawn()
+    {
+        // Tell the HUD a new player has joined
+        Debug.Log("PlayerHealth spawned, IsOwner: " + IsOwner + " ClientId: " + OwnerClientId);
+        HUDManager.Instance.RegisterPlayer(this);
+    }
+
+    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    void Start()
+    {
+        // gameManager = GameManager.Instance;
+    }
+
+
+    public int Hit(bool Hammer)
+    {
+        if (Hammer)
+        {
+            damPerc.Value += Random.Range(10,20);  
+        }
+        else
+        {
+            damPerc.Value += Random.Range(4,10);
+        }
+        
+
+        int newMult = Mathf.RoundToInt(Mathf.Pow(damPerc.Value, .85f));
+        mult.Value = newMult;
+        // gameManager.OnPlayerHit(playerID,    mult);
+
+        Debug.Log(damPerc.Value +"%" + " " + mult.Value);
+        return newMult;
+        
+    }
+
+
+    public void ResetHealth()
+    {
+        damPerc.Value = 0;
+        mult.Value = 1;
+    }
+
+
+}

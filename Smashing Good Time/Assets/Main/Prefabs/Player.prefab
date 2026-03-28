@@ -172,6 +172,68 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1 &560207390668386916
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3684866441255472180}
+  - component: {fileID: 5975828472154102993}
+  m_Layer: 9
+  m_Name: HUDContainer
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &3684866441255472180
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 560207390668386916}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1209123391054189811}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0}
+  m_AnchorMax: {x: 0.5, y: 0}
+  m_AnchoredPosition: {x: 0, y: 50}
+  m_SizeDelta: {x: 1920, y: 1080}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &5975828472154102993
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 560207390668386916}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30649d3a9faa99c48a7b1166b86bf2a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Padding:
+    m_Left: 0
+    m_Right: 0
+    m_Top: 0
+    m_Bottom: 0
+  m_ChildAlignment: 4
+  m_Spacing: 20
+  m_ChildForceExpandWidth: 0
+  m_ChildForceExpandHeight: 0
+  m_ChildControlWidth: 0
+  m_ChildControlHeight: 0
+  m_ChildScaleWidth: 0
+  m_ChildScaleHeight: 0
+  m_ReverseArrangement: 0
 --- !u!1 &921079285081390041
 GameObject:
   m_ObjectHideFlags: 0
@@ -603,7 +665,7 @@ GameObject:
   - component: {fileID: 8977649349468754211}
   - component: {fileID: 4964897782575342707}
   m_Layer: 9
-  m_Name: RawImage
+  m_Name: CrossHair
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -898,6 +960,7 @@ GameObject:
   - component: {fileID: 3803528672163922506}
   - component: {fileID: 1023375806936806420}
   - component: {fileID: 7532949116278555595}
+  - component: {fileID: 837493160654629152}
   m_Layer: 9
   m_Name: Canvas
   m_TagString: Untagged
@@ -919,6 +982,7 @@ RectTransform:
   m_Children:
   - {fileID: 1376928684300993012}
   - {fileID: 7260788210554975433}
+  - {fileID: 3684866441255472180}
   m_Father: {fileID: 596220965839862077}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -1001,6 +1065,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3dd9eeea0e27af94981f3ca7a3476c2e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &837493160654629152
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7223217415199135226}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fcaf4111e6f06874e81cdf8b518c5a18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerCardPrefab: {fileID: 8008445761119116972, guid: 86e4f53996bcc1b4b9b4709804dde1fa, type: 3}
+  hudContainer: {fileID: 3684866441255472180}
 --- !u!1 &7743251016003614241
 GameObject:
   m_ObjectHideFlags: 0
@@ -1182,6 +1260,7 @@ GameObject:
   - component: {fileID: 1427902085583495070}
   - component: {fileID: 5411376580419281271}
   - component: {fileID: 1079221771382185049}
+  - component: {fileID: 6402250428762846314}
   m_Layer: 9
   m_Name: Player
   m_TagString: Player
@@ -1593,12 +1672,12 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 640
   requiredImpact: 15
-  FlyMultiplier: 25
   MainCam: {fileID: 6809821254135934710}
   MainCamAudio: {fileID: 9064872932211963122}
   RagCam: {fileID: 3017676486507899173}
   RagCamAudio: {fileID: 8255810581160359240}
   Sledge: {fileID: 4916710651593821289}
+  Health: {fileID: 6402250428762846314}
 --- !u!114 &5411376580419281271
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1633,6 +1712,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
+--- !u!114 &6402250428762846314
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9041923656687872667}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: caf6a96d7f2074a4b870ce731e696a0f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  damPerc:
+    m_InternalValue: 0
+  mult:
+    m_InternalValue: 1
 --- !u!1001 &814911181196504256
 PrefabInstance:
   m_ObjectHideFlags: 0

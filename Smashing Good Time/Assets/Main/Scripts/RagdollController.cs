@@ -27,7 +27,7 @@ public class RagdollController : NetworkBehaviour
     private Vector3 SavedVelocity;
     private Vector3 SavedAngularVelocity;
 
-    public float FlyMultiplier = 100f;
+    // public float FlyMultiplier = 100f;
 
     [SerializeField] private Camera MainCam;
     [SerializeField] private AudioListener MainCamAudio;
@@ -35,7 +35,7 @@ public class RagdollController : NetworkBehaviour
     [SerializeField] private AudioListener RagCamAudio;
 
     public SledgeAttack Sledge;
- 
+    public PlayerHealth Health;
 
     void Awake()
     {   
@@ -59,7 +59,7 @@ public class RagdollController : NetworkBehaviour
         {
             Vector3 blockDirection = collision.impulse.normalized;
             CaptureVelocityMain();
-            RecieveHitServerRpc(blockDirection, 4);
+            RecieveHitServerRpc(blockDirection, false);
         }
     }
 
@@ -226,18 +226,21 @@ public class RagdollController : NetworkBehaviour
     // }
 
     [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
-    private void RecieveHitServerRpc(Vector3 forceDir, int multDiv)
+    private void RecieveHitServerRpc(Vector3 forceDir, bool Hammer)
     {
-        SpecialRagdollOnClientRpc(forceDir, multDiv);
+        int mult = Health.Hit(Hammer); 
+        SpecialRagdollOnClientRpc(forceDir, mult, Hammer);
+        
     }
 
     [ClientRpc]
-    private void SpecialRagdollOnClientRpc(Vector3 forceDir, int multDiv)
+    private void SpecialRagdollOnClientRpc(Vector3 forceDir,int mult, bool Hammer)
     {
         RagMode = true;
         animator.enabled = false;
         Hitbox.enabled = false;
 
+        
         foreach(Collider col in ragdollColliders)
             col.enabled = true;
 
@@ -246,9 +249,18 @@ public class RagdollController : NetworkBehaviour
 
         SetVelocityToRag();
         MainRigidbody.isKinematic = true;
-
-        foreach (Rigidbody limb in limbsRigidbodies)
-            limb.AddForce(forceDir * FlyMultiplier/multDiv, ForceMode.Impulse);
+    
+        if (Hammer)
+        {
+            foreach (Rigidbody limb in limbsRigidbodies)
+                limb.AddForce(forceDir * mult, ForceMode.Impulse);
+        }
+        else
+        {
+            foreach (Rigidbody limb in limbsRigidbodies)
+                limb.AddForce(forceDir * mult/2, ForceMode.Impulse);
+        }
+        
 
         if (IsOwner)
         {
@@ -261,12 +273,12 @@ public class RagdollController : NetworkBehaviour
     }
 
     
-    public void RecieveHit(Vector3 forceDir, int multDiv)
+    public void RecieveHit(Vector3 forceDir, bool Hammer)
     {
         if (!RagMode)
         {
             CaptureVelocityMain();
-            RecieveHitServerRpc(forceDir, multDiv);
+            RecieveHitServerRpc(forceDir, Hammer);
         }
     }
 
