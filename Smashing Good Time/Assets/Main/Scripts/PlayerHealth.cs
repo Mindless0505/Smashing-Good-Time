@@ -55,7 +55,13 @@ public class PlayerHealth : NetworkBehaviour
     }
 
 
-    public void ResetHealth()
+  public void ResetHealth()
+    {
+        ResetHealthServerRpc();
+    }
+
+    [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
+    private void ResetHealthServerRpc()
     {
         damPerc.Value = 0;
         mult.Value = 1;

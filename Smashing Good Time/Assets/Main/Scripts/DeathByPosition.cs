@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
+
 public class DeathByPosition : MonoBehaviour
 {
     [Header("Wall Limits")]
@@ -22,10 +23,13 @@ public class DeathByPosition : MonoBehaviour
     private bool isRespawning = false;
     private Rigidbody rb;
 
+    public PlayerHealth Health;
+
     void Start()
     {
         currentLives = lives;
         rb = GetComponent<Rigidbody>();
+        Health = GetComponent<PlayerHealth>();
 
         if (respawnPoint == null)
     {
@@ -48,6 +52,7 @@ public class DeathByPosition : MonoBehaviour
     void Die()
     {
         currentLives--;
+        Health.ResetHealth();
         Debug.Log(gameObject.name + " lost a life | Lives Remaining: " + currentLives);
 
         if (currentLives <= 0)
