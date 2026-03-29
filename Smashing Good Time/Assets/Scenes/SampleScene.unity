@@ -9046,6 +9046,7 @@ MonoBehaviour:
   respawnPoint: {fileID: 1024425304}
   respawnDelay: 1
   lives: 3
+  Health: {fileID: 0}
 --- !u!114 &920190031
 MonoBehaviour:
   m_ObjectHideFlags: 0

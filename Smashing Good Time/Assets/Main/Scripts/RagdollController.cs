@@ -22,6 +22,12 @@ public class RagdollController : NetworkBehaviour
     public float maxSearchRadius = 1f;
     public LayerMask collisionMask;
 
+    private float initialRagdollSpeed;
+    private bool canStand = false;
+    private float minimumThreshold = 0.5f;
+    private float threshPercent = 0.05f;
+    private float threshold = 0f;
+
     [SerializeField] private float requiredImpact = 15f;
 
     private Vector3 SavedVelocity;
@@ -71,9 +77,19 @@ public class RagdollController : NetworkBehaviour
             return;
         }
 
+        if (RagMode && !canStand)
+        {
+            float currentSpeed = PelvisRigidbody.linearVelocity.magnitude;
+        
+            if (currentSpeed <= Mathf.Max(threshold, minimumThreshold))
+            {
+                canStand = true;
+            }
+        }
+
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            if (!animator.enabled)
+            if (!animator.enabled && canStand)
             {
                 TryStand();
             }
@@ -140,6 +156,10 @@ public class RagdollController : NetworkBehaviour
 
         MainRigidbody.isKinematic = true;
         SetVelocityToRag();
+
+        initialRagdollSpeed = PelvisRigidbody.linearVelocity.magnitude;
+        threshold = initialRagdollSpeed * threshPercent;
+        canStand = false;
 
         // Cameras only matter for the owner
         if (IsOwner)
@@ -261,6 +281,9 @@ public class RagdollController : NetworkBehaviour
                 limb.AddForce(forceDir * mult/2, ForceMode.Impulse);
         }
         
+        initialRagdollSpeed = PelvisRigidbody.linearVelocity.magnitude;
+        threshold = initialRagdollSpeed * threshPercent;
+        canStand = false;
 
         if (IsOwner)
         {
