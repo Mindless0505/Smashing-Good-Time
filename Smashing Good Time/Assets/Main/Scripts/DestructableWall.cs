@@ -8,6 +8,7 @@ public class DestructableWall : NetworkBehaviour
     public float requiredImpact = 15f;
     public float requiredFallImpact = 10f;
     public float requiredHealth = 50f;
+    public int oddsOfSpawningCrumbs = 10;
 
     // Wall that replaces
     [SerializeField] private GameObject destroyedWallPrefab;
@@ -93,13 +94,15 @@ public class DestructableWall : NetworkBehaviour
         // Spawn one object that is on server
         if (IsServer && serverPrefab != null)
         {
-            GameObject serverObj = Instantiate(serverPrefab, transform.position, transform.rotation);
-            NetworkObject serverNetObj = serverObj.GetComponent<NetworkObject>();
-
-            // only spawn if you set the variable in the inspector to prevent errors
-            if (serverNetObj != null)
-            {
-                serverNetObj.Spawn(true);
+            int randomNumber = Random.Range(1, oddsOfSpawningCrumbs);
+            if (randomNumber == 1) {
+                GameObject serverObj = Instantiate(serverPrefab, transform.position, transform.rotation);
+                NetworkObject serverNetObj = serverObj.GetComponent<NetworkObject>();
+                // only spawn if you set the variable in the inspector to prevent errors
+                if (serverNetObj != null)
+                {
+                    serverNetObj.Spawn(true);
+                }
             }
         }
 
