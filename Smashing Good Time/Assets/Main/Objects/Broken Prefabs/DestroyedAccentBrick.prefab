@@ -64,9 +64,93 @@ PrefabInstance:
       propertyPath: m_ConstrainProportionsScale
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: -8073995904867792646, guid: b6d10e6fe23502f4499ab583493547f3, type: 3}
+      propertyPath: m_Layer
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: -8055816951201040859, guid: b6d10e6fe23502f4499ab583493547f3, type: 3}
+      propertyPath: m_Layer
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: -4949927424873726611, guid: b6d10e6fe23502f4499ab583493547f3, type: 3}
+      propertyPath: m_Layer
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: -4587362175650917211, guid: b6d10e6fe23502f4499ab583493547f3, type: 3}
+      propertyPath: m_Layer
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: -3795995157437908019, guid: b6d10e6fe23502f4499ab583493547f3, type: 3}
+      propertyPath: m_Layer
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: -2676125845039076209, guid: b6d10e6fe23502f4499ab583493547f3, type: 3}
+      propertyPath: m_Layer
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: -2449518958765959976, guid: b6d10e6fe23502f4499ab583493547f3, type: 3}
+      propertyPath: m_Layer
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: -1348792724776969131, guid: b6d10e6fe23502f4499ab583493547f3, type: 3}
+      propertyPath: m_Layer
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: -1095057316096122450, guid: b6d10e6fe23502f4499ab583493547f3, type: 3}
+      propertyPath: m_Layer
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: -994760171027361641, guid: b6d10e6fe23502f4499ab583493547f3, type: 3}
+      propertyPath: m_Layer
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: -374996755856341954, guid: b6d10e6fe23502f4499ab583493547f3, type: 3}
+      propertyPath: m_Layer
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: -124642263927283369, guid: b6d10e6fe23502f4499ab583493547f3, type: 3}
+      propertyPath: m_Layer
+      value: 11
+      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: b6d10e6fe23502f4499ab583493547f3, type: 3}
       propertyPath: m_Name
       value: DestroyedAccentBrick
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: b6d10e6fe23502f4499ab583493547f3, type: 3}
+      propertyPath: m_Layer
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 2097187754769434675, guid: b6d10e6fe23502f4499ab583493547f3, type: 3}
+      propertyPath: m_Layer
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 2954999773514583598, guid: b6d10e6fe23502f4499ab583493547f3, type: 3}
+      propertyPath: m_Layer
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 3510243736997633525, guid: b6d10e6fe23502f4499ab583493547f3, type: 3}
+      propertyPath: m_Layer
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 5241125753996025782, guid: b6d10e6fe23502f4499ab583493547f3, type: 3}
+      propertyPath: m_Layer
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 6617782001528640522, guid: b6d10e6fe23502f4499ab583493547f3, type: 3}
+      propertyPath: m_Layer
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 6845280060591800678, guid: b6d10e6fe23502f4499ab583493547f3, type: 3}
+      propertyPath: m_Layer
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 7039474936514207064, guid: b6d10e6fe23502f4499ab583493547f3, type: 3}
+      propertyPath: m_Layer
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 8944362150442777223, guid: b6d10e6fe23502f4499ab583493547f3, type: 3}
+      propertyPath: m_Layer
+      value: 11
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

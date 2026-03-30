@@ -68,6 +68,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: SingleChunkOfAccent
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 640c69b219bd09d47922297d46368c60, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
