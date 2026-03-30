@@ -1,5 +1,6 @@
 using Unity.Netcode;
 using UnityEngine;
+using Unity.Netcode.Components;
 
 public class DestructableWall : NetworkBehaviour
 {
@@ -16,6 +17,7 @@ public class DestructableWall : NetworkBehaviour
     // bool to prevent multiple destruction calls
     private bool isDestroyed = false;
     // Reference to the NetworkObject component
+    private bool isFalling = false;
     private NetworkObject netObj;
     private Rigidbody Wallrb;
     public LayerMask Crumbs;
@@ -24,12 +26,21 @@ public class DestructableWall : NetworkBehaviour
     [SerializeField] private AudioClip[] impactSounds;
     [SerializeField] private AudioClip heavyImpactSound;
 
+    private NetworkRigidbody netRb;
+    private NetworkTransform netTransform;
+
+
     private void Awake()
     {
         netObj = GetComponent<NetworkObject>();
         Wallrb = GetComponent<Rigidbody>();
-        Wallrb.constraints = RigidbodyConstraints.FreezeAll;
+        netRb = GetComponent<NetworkRigidbody>();
+        netTransform = GetComponent<NetworkTransform>();
         audioSource = GetComponent<AudioSource>();
+
+        Wallrb.constraints = RigidbodyConstraints.FreezeAll;
+        netRb.enabled = false;
+        netTransform.enabled = false;
 
         // Ignore all physics interactions between this wall's layer and the Crumbs layer
         Physics.IgnoreLayerCollision(gameObject.layer, LayerMask.NameToLayer("Crumbs"), true);
@@ -40,7 +51,7 @@ public class DestructableWall : NetworkBehaviour
         // Only process collisions on the server and if the wall isn't already destroyed
         if (!IsServer || isDestroyed) return;
 
-        // if (collision.gameObject.layer == LayerMask.NameToLayer("Crumbs")) return;
+        if (collision.gameObject.layer == LayerMask.NameToLayer("Crumbs")) return;
 
 
         // Calculate the impact strength 
@@ -51,6 +62,8 @@ public class DestructableWall : NetworkBehaviour
         if (impactStrength >= requiredFallImpact)
         {
             Wallrb.constraints = RigidbodyConstraints.None;
+            netRb.enabled = true;
+            netTransform.enabled = true;
         }
         if (impactStrength >= requiredImpact || requiredHealth <= 0f)
         {
