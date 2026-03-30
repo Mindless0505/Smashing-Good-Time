@@ -61,6 +61,9 @@ public class Grab : NetworkBehaviour
                 heldObject.linearDamping = 1f; // smoother control
                 distanceToObject = hit.distance;
 
+                NetworkChunk chunk = hit.rigidbody.GetComponent<NetworkChunk>();
+                if (chunk != null) chunk.OnGrabbed();
+
                 float mass = heldObject.mass;
                 // adjustedGrabForce = grabForce / Mathf.Clamp(mass/2, 1f, 20f); 
                 // adjustedDropLimit = dropForceLimit / Mathf.Clamp(mass * 0.5f, 1f, 20f);
@@ -103,6 +106,8 @@ public class Grab : NetworkBehaviour
         heldSharedPhysics = null;
         heldObject = null;
         Sledge.SetVisualsActive(true);
+        NetworkChunk chunk = heldObject.GetComponent<NetworkChunk>();
+        if (chunk != null) chunk.OnDropped();
     }
 
     bool IsStandingOn(Rigidbody obj)
