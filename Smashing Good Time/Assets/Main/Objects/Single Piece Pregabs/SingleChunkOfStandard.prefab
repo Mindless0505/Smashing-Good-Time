@@ -91,6 +91,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 853561b0f5bb0124abf3fb4c12ad4884, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2417179286405288560}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 853561b0f5bb0124abf3fb4c12ad4884, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 741462724545066900}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 853561b0f5bb0124abf3fb4c12ad4884, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 9094400053800145986}
   m_SourcePrefab: {fileID: 100100000, guid: 853561b0f5bb0124abf3fb4c12ad4884, type: 3}
 --- !u!1 &8778161367736071722 stripped
 GameObject:
@@ -233,3 +239,30 @@ MonoBehaviour:
   UseRigidBodyForMotion: 0
   AutoUpdateKinematicState: 1
   AutoSetKinematicOnDespawn: 1
+--- !u!114 &741462724545066900
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8778161367736071722}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 425e70a818f2dd14383d999640b77c6c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  rb: {fileID: 0}
+--- !u!114 &9094400053800145986
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8778161367736071722}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e561c0a052135ea45b526fa69c7d4a22, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
