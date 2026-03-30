@@ -97,16 +97,19 @@ public class Grab : NetworkBehaviour
 
     public void DropObject()
     {
+        if (heldObject == null) return;
 
-        if(heldObject == null) return;
-
+        // Cache reference BEFORE nulling
+        NetworkChunk chunk = heldObject.GetComponent<NetworkChunk>();
+        Rigidbody dropped = heldObject;
 
         SetGravityServerRpc(heldSharedPhysics.GetComponent<NetworkObject>(), true, 0f);
 
         heldSharedPhysics = null;
         heldObject = null;
         Sledge.SetVisualsActive(true);
-        NetworkChunk chunk = heldObject.GetComponent<NetworkChunk>();
+
+        // Now safe to call
         if (chunk != null) chunk.OnDropped();
     }
 
@@ -138,6 +141,8 @@ public class Grab : NetworkBehaviour
         rb.useGravity = useGravity;
         rb.linearDamping = drag;
     }
+
+    
 
 }
 

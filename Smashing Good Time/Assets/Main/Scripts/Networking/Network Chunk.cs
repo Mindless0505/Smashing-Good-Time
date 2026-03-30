@@ -81,8 +81,8 @@ public class NetworkChunk : NetworkBehaviour
         if (netTransform != null) netTransform.enabled = false;
     }
 
-    public void OnGrabbed()
-    {  
+   public void OnGrabbed()
+    {
         isHeld = true;
         EnableNetworkingServerRpc();
     }
@@ -90,15 +90,22 @@ public class NetworkChunk : NetworkBehaviour
     public void OnDropped()
     {
         isHeld = false;
-        // Small delay so the throw velocity has time to sync before disabling
         stillTimer = -2f;
+        SetHeldServerRpc(false); // sync to server
     }
 
     [Rpc(SendTo.Server)]
     private void EnableNetworkingServerRpc()
     {
-        netRb.enabled = true;
+        isHeld = true;    // sync held state on server too
+        EnableNetworking();
         StartCoroutine(SleepCheck());
+    }
+
+    [Rpc(SendTo.Server)]
+    private void SetHeldServerRpc(bool held)
+    {
+        isHeld = held;
     }
 
     [Rpc(SendTo.Server)]
