@@ -20,33 +20,42 @@ public class NetworkChunk : NetworkBehaviour
         netTransform = GetComponent<NetworkTransform>();
         rb = GetComponent<Rigidbody>();
 
-        if (netRb != null) netRb.enabled = false;
-        if (netTransform != null) netTransform.enabled = false;
+        // Start active so initial position syncs to all clients
+        if (netRb != null) netRb.enabled = true;
+        if (netTransform != null) netTransform.enabled = true;
+        isNetworkActive = true;
     }
 
-private IEnumerator SleepCheck()
-{
-    while (true)
+    public override void OnNetworkSpawn()
     {
-        yield return new WaitForSeconds(0.5f);
+        if (!IsServer) return;
+        // Begin sleep check immediately on spawn
+        StartCoroutine(SleepCheck());
+    }
 
-        if (isHeld) continue; // don't sleep while being held
-
-        if (rb.IsSleeping() || rb.linearVelocity.magnitude < 0.05f)
+    private IEnumerator SleepCheck()
+    {
+        while (true)
         {
-            stillTimer += 0.5f;
-            if (stillTimer >= sleepDelay)
+            yield return new WaitForSeconds(0.5f);
+
+            if (isHeld) continue; // don't sleep while being held
+
+            if (rb.IsSleeping() || rb.linearVelocity.magnitude < 0.05f)
             {
-                DisableNetworking();
-                yield break;
+                stillTimer += 0.5f;
+                if (stillTimer >= sleepDelay)
+                {
+                    DisableNetworking();
+                    yield break;
+                }
+            }
+            else
+            {
+                stillTimer = 0f;
             }
         }
-        else
-        {
-            stillTimer = 0f;
-        }
     }
-}
 
     private void OnCollisionEnter(Collision collision)
     {
