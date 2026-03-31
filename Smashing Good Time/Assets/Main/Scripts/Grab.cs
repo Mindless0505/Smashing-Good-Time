@@ -1,5 +1,7 @@
 using UnityEngine;
 using Unity.Netcode;
+using System.Collections;
+using UnityEngine.UI;
 
 public class Grab : NetworkBehaviour
 {
@@ -20,9 +22,20 @@ public class Grab : NetworkBehaviour
     public Rigidbody heldObject;
     float distanceToObject;
     private SharedPhysics heldSharedPhysics;
+    private RagdollController Ragdoll;
 
+    [SerializeField] private RawImage XHair;
+    [SerializeField] private RawImage GrabXHair;
 
     // Update is called once per frame
+    void Awake()
+    {
+        Ragdoll = GetComponent<RagdollController>();
+        XHair.enabled = true;
+        GrabXHair.enabled = false;
+        StartCoroutine(CrosshairCheck());
+    }
+    
     void Update()
     {
         if(!IsOwner)
@@ -43,6 +56,22 @@ public class Grab : NetworkBehaviour
             ThrowObject();
         }
 
+    }
+
+    private IEnumerator CrosshairCheck()
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(0.05f); // checks 20 times per second, plenty for a crosshair
+
+            if (!IsOwner) continue;
+            
+            bool canGrab = Physics.Raycast(cam.transform.position, cam.transform.forward, out RaycastHit hit, grabDistance) 
+                        && !Ragdoll.RagMode && heldObject == null && hit.collider.CompareTag("Throwable");
+
+            XHair.enabled = !canGrab;
+            GrabXHair.enabled = canGrab;
+        }
     }
 
     public void TryGrab()

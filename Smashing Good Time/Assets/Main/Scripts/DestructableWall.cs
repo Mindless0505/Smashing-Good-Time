@@ -65,6 +65,7 @@ public class DestructableWall : NetworkBehaviour
             Wallrb.constraints = RigidbodyConstraints.None;
             netRb.enabled = true;
             netTransform.enabled = true;
+            gameObject.tag = "Throwable";
         }
         if (impactStrength >= requiredImpact || requiredHealth <= 0f)
         {
