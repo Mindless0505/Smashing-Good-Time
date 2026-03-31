@@ -37,8 +37,16 @@ public class RagdollCameraRotate : NetworkBehaviour
 
         xRotation = Math.Clamp(xRotation, -80f, 80f);
 
+        
+    }
+    
+    void LateUpdate()
+    {
+        if(!IsOwner) return;
+        if(target == null) return;
         UpdateCamera();
     }
+
 
     void UpdateCamera()
     {

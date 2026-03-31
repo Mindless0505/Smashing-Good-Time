@@ -40,6 +40,8 @@ public class PlayerMovement : NetworkBehaviour
     public float horizontalInput;
     public float verticalInput;
 
+    private ChatManager ChatManager;
+
     Vector3 moveDirection;
 
     Rigidbody rb;
@@ -74,6 +76,8 @@ public class PlayerMovement : NetworkBehaviour
             rb.linearDamping = groundDrag;
         else
             rb.linearDamping = 0;
+
+        if (ChatManager.Instance != null && ChatManager.chatOpen) return;
     }
     private void FixedUpdate() 
     {
@@ -98,10 +102,10 @@ public class PlayerMovement : NetworkBehaviour
         
 
         // Sprint
-        if (Input.GetKey(sprintKey) && grounded)
+        if (Input.GetKey(sprintKey))  // remove && grounded
         {
-            Sprint();
             isSprinting = true;
+            if (grounded) Sprint(); // still only apply sprint speed on ground
         }
         else
         {
