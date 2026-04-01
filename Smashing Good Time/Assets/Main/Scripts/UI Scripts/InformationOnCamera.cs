@@ -28,7 +28,7 @@ public class InformationOnCamera : MonoBehaviour
         if (netcodeUI == null || lobbyCodeText == null) return;
 
         // Update text
-        lobbyCodeText.text = "Lobby Code: " + netcodeUI.CurrentLobbyCode + "Relay Code" + netcodeUI.RelayCode;
+        lobbyCodeText.text = "Lobby Code: " + netcodeUI.CurrentLobbyCode; //+ "Relay Code" + netcodeUI.RelayCode;
 
     
     }

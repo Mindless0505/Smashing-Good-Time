@@ -39,21 +39,30 @@ public class HUDManager : NetworkBehaviour
     public void RegisterPlayer(PlayerHealth health)
     {
 
-        Debug.Log("RegisterPlayer called for client: " + health.OwnerClientId);
-        Debug.Log("Already registered: " + percTexts.ContainsKey(health.OwnerClientId));
         if (percTexts.ContainsKey(health.OwnerClientId)) return;
 
         GameObject card = Instantiate(playerCardPrefab, hudContainer);
 
-        card.transform.Find("IDText").GetComponent<TMP_Text>().text = "P" + (health.OwnerClientId + 1);
+        int colorIndex = (int)health.OwnerClientId % ColorReference.PlayerColors.Length;
 
         TMP_Text percText = card.transform.Find("PercText").GetComponent<TMP_Text>();
         percText.text = "0%";
         percTexts[health.OwnerClientId] = percText;
+        // percText.color = PlayerHealth.PlayerColors[colorIndex];
 
-        // int colorIndex = (int)health.OwnerClientId % PlayerHealth.PlayerColors.Length;
-        // card.GetComponent<Image>().color = PlayerHealth.PlayerColors[colorIndex];
+        TMP_Text idText = card.transform.Find("IDText").GetComponent<TMP_Text>();
+        idText.text = "P" + (health.OwnerClientId + 1);
+        idText.color = ColorReference.PlayerColors[colorIndex];
 
         trackedPlayers.Add(health);
+
+        trackedPlayers.Sort((a, b) => a.OwnerClientId.CompareTo(b.OwnerClientId));
+
+        // Reorder the actual UI cards to match
+        foreach (PlayerHealth p in trackedPlayers)
+        {
+            if (percTexts.TryGetValue(p.OwnerClientId, out TMP_Text text))
+                text.transform.parent.SetSiblingIndex(trackedPlayers.IndexOf(p));
+        }
     }
 }

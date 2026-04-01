@@ -34,6 +34,7 @@ public class SledgeAttack : NetworkBehaviour
     public GameObject playerRoot;
 
     private bool VisualActive;
+    [SerializeField] private Renderer hiltRenderer;
 
     
     void Start()
@@ -58,10 +59,15 @@ public class SledgeAttack : NetworkBehaviour
                 Attack();
             }
         }
+    }
 
+    public override void OnNetworkSpawn()
+    {
+        int colorIndex = (int)OwnerClientId % ColorReference.PlayerColorsHilt.Length;
         
-      
- 
+        // Instance the material so we don't change it for everyone
+        Material hiltMat = hiltRenderer.material;
+        hiltMat.color = ColorReference.PlayerColorsHilt[colorIndex];
     }
 
     public void SetVisualsActive(bool active)

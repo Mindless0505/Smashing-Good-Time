@@ -66,6 +66,4 @@ public class PlayerHealth : NetworkBehaviour
         damPerc.Value = 0;
         mult.Value = 1;
     }
-
-
 }

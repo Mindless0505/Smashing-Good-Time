@@ -31,8 +31,22 @@ public class Grab : NetworkBehaviour
     void Awake()
     {
         Ragdoll = GetComponent<RagdollController>();
-        XHair.enabled = true;
-        GrabXHair.enabled = false;
+        // XHair.enabled = true;
+        // GrabXHair.enabled = false;
+        // StartCoroutine(CrosshairCheck());
+    }
+
+    public override void OnNetworkSpawn()
+    {
+        if (!IsOwner)
+        {
+            // Hide all HUD elements on other players' instances
+            XHair.enabled = false;
+            GrabXHair.enabled = false;
+            enabled = false; // disable the whole Grab script on non-owners
+            return;
+        }
+
         StartCoroutine(CrosshairCheck());
     }
     
