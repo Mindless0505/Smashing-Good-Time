@@ -164,7 +164,9 @@ public class SledgeAttack : NetworkBehaviour
                 SharedPhysics sp = rb.GetComponent<SharedPhysics>();
                 if (sp != null)
                 {
-                    sp.ApplyForceServerRpc(forceDir * HammerForce, ForceMode.Impulse);
+                    NetworkObject netObj = sp.GetComponent<NetworkObject>();
+                    if (netObj != null && netObj.IsSpawned)
+                        {sp.ApplyForceServerRpc(forceDir * HammerForce, ForceMode.Impulse);}
                 }
                 else
                 {
