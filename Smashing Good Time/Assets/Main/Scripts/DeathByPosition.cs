@@ -1,8 +1,9 @@
 using System.Collections;
 using UnityEngine;
+using Unity.Netcode;
+using Unity.Netcode.Components;
 
-
-public class DeathByPosition : MonoBehaviour
+public class DeathByPosition : NetworkBehaviour
 {
     [Header("Wall Limits")]
     public float minY = -10f;
@@ -18,28 +19,43 @@ public class DeathByPosition : MonoBehaviour
 
     [Header("Lives")]
     public int lives = 3;
-    private int currentLives;
+
+    public NetworkVariable<int> currentLives = new NetworkVariable<int>(3,
+        NetworkVariableReadPermission.Everyone,
+        NetworkVariableWritePermission.Server);
 
     private bool isRespawning = false;
     private Rigidbody rb;
-
     public PlayerHealth Health;
+
+    public override void OnNetworkSpawn()
+    {
+        currentLives.OnValueChanged += OnLivesChanged;
+
+        if (IsServer)
+            currentLives.Value = lives;
+
+        if (respawnPoint == null)
+            respawnPoint = GameObject.Find("RespawnPoint").transform;
+    }
+
+    private void OnLivesChanged(int oldVal, int newVal)
+    {
+        // Tell HUD to update this player's lives display
+        if (HUDManager.Instance != null)
+            HUDManager.Instance.UpdateLives(OwnerClientId, newVal, lives);
+    }
 
     void Start()
     {
-        currentLives = lives;
         rb = GetComponent<Rigidbody>();
         Health = GetComponent<PlayerHealth>();
 
-        if (respawnPoint == null)
-    {
-        respawnPoint = GameObject.Find("RespawnPoint").transform;
-    }
     }
 
     void Update()
     {
-        if (isRespawning) return;
+        if (!IsServer || !IsSpawned || isRespawning) return;
 
         Vector3 pos = transform.position;
 
@@ -51,11 +67,11 @@ public class DeathByPosition : MonoBehaviour
 
     void Die()
     {
-        currentLives--;
+        isRespawning = true;
+        currentLives.Value--;
         Health.ResetHealth();
-        Debug.Log(gameObject.name + " lost a life | Lives Remaining: " + currentLives);
 
-        if (currentLives <= 0)
+        if (currentLives.Value <= 0)
         {
             // Handle game over logic here (e.g., show game over screen, reset level, etc.)
             GameOver();
@@ -63,18 +79,28 @@ public class DeathByPosition : MonoBehaviour
         }
         Respawn();
     }
+
     void Respawn()
     {
-        isRespawning = true;
+        TeleportOwnerRpc(respawnPoint.position);
+        StartCoroutine(RespawnDelay()); // Delay re-enabling Die() so NetworkTransform has time to sync the new position
+    }
 
+    [Rpc(SendTo.Owner)]
+    private void TeleportOwnerRpc(Vector3 position)
+    {
+        GetComponent<NetworkTransform>().Teleport(position, transform.rotation, transform.localScale);
         if (rb != null)
         {
-            rb.linearVelocity = Vector3.zero; 
+            rb.linearVelocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+            rb.Sleep();
         }
+    }
 
-        transform.position = respawnPoint.position;
-
-
+    private IEnumerator RespawnDelay()
+    {
+        yield return new WaitForSeconds(0.5f);
         isRespawning = false;
     }
 

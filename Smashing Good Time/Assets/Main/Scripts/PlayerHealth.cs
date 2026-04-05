@@ -22,7 +22,15 @@ public class PlayerHealth : NetworkBehaviour
     public override void OnNetworkSpawn()
     {
         // Tell the HUD a new player has joined
-        Debug.Log("PlayerHealth spawned, IsOwner: " + IsOwner + " ClientId: " + OwnerClientId);
+        // HUDManager.Instance.RegisterPlayer(this);
+        StartCoroutine(RegisterWithHUD());
+    }
+
+    private IEnumerator RegisterWithHUD()
+    {
+        while (HUDManager.Instance == null)
+            yield return null;
+
         HUDManager.Instance.RegisterPlayer(this);
     }
 
