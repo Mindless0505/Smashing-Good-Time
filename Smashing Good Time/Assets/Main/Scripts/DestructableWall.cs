@@ -18,7 +18,7 @@ public class DestructableWall : NetworkBehaviour
     // bool to prevent multiple destruction calls
     private bool isDestroyed = false;
     // Reference to the NetworkObject component
-    private bool isFalling = false;
+    // private bool isFalling = false;
     private NetworkObject netObj;
     private Rigidbody Wallrb;
     public LayerMask Crumbs;
@@ -40,6 +40,7 @@ public class DestructableWall : NetworkBehaviour
         audioSource = GetComponent<AudioSource>();
 
         Wallrb.constraints = RigidbodyConstraints.FreezeAll;
+        netObj.enabled = false;
         netRb.enabled = false;
         netTransform.enabled = false;
 
@@ -63,6 +64,7 @@ public class DestructableWall : NetworkBehaviour
         if (impactStrength >= requiredFallImpact)
         {
             Wallrb.constraints = RigidbodyConstraints.None;
+            netObj.enabled = true;
             netRb.enabled = true;
             netTransform.enabled = true;
             gameObject.tag = "Throwable";
