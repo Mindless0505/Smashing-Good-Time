@@ -28,6 +28,8 @@ public class DeathByPosition : NetworkBehaviour
     private Rigidbody rb;
     public PlayerHealth Health;
 
+    private bool isGameOver = false;
+
     public override void OnNetworkSpawn()
     {
         currentLives.OnValueChanged += OnLivesChanged;
@@ -67,16 +69,18 @@ public class DeathByPosition : NetworkBehaviour
 
     void Die()
     {
+        if (isGameOver) return; // don't respawn if already eliminated
+
         isRespawning = true;
         currentLives.Value--;
         Health.ResetHealth();
 
         if (currentLives.Value <= 0)
         {
-            // Handle game over logic here (e.g., show game over screen, reset level, etc.)
             GameOver();
             return;
         }
+
         Respawn();
     }
 
@@ -106,8 +110,36 @@ public class DeathByPosition : NetworkBehaviour
 
     void GameOver()
     {
-        Debug.Log("Game over");
-        gameObject.SetActive(false);
+        if (isGameOver) return;
+        isGameOver = true;
 
+        Debug.Log($"Client {OwnerClientId} is out of lives");
+
+        // Keep object alive on server for network integrity,
+        // but tell the owner to enter spectator mode
+        EnterSpectatorModeRpc();
+    }
+
+    [Rpc(SendTo.Owner)]
+    private void EnterSpectatorModeRpc()
+    {
+        // Disable player camera
+        Camera playerCam = GetComponentInChildren<Camera>();
+        if (playerCam != null)
+            playerCam.enabled = false;
+
+        // Disable input/movement scripts
+        foreach (var input in GetComponents<MonoBehaviour>())
+            if (input is not DeathByPosition && input is not NetworkBehaviour)
+                input.enabled = false;
+
+        // Hide mesh
+        foreach (var r in GetComponentsInChildren<Renderer>())
+            r.enabled = false;
+
+        // Start spectating
+        SpectatorController spectator = FindFirstObjectByType<SpectatorController>(FindObjectsInactive.Include);
+        if (spectator != null)
+            spectator.StartSpectating();
     }
 }
