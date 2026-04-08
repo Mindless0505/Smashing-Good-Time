@@ -103,6 +103,7 @@ public class DeathByPosition : NetworkBehaviour
     void Respawn()
     {
         Vector3 spawnPos = GetRandomSpawnPoint();
+        // ragdollController.TryStand();
         TeleportOwnerRpc(spawnPos);
         StartCoroutine(RespawnDelay());
     }
@@ -137,7 +138,7 @@ public class DeathByPosition : NetworkBehaviour
         }
         else
         {
-            // Upright — normal teleport
+            // Upright ï¿½ normal teleport
             GetComponent<NetworkTransform>().Teleport(position, transform.rotation, transform.localScale);
             if (rb != null && !rb.isKinematic)
             {
@@ -188,7 +189,7 @@ public class DeathByPosition : NetworkBehaviour
         EnterSpectatorModeRpc();
     }
 
-    // Runs on server — disables the object for all clients
+    // Runs on server ï¿½ disables the object for all clients
     [Rpc(SendTo.Server)]
     private void DisablePlayerServerRpc()
     {
