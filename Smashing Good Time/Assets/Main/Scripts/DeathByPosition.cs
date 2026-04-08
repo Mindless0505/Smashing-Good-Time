@@ -5,6 +5,9 @@ using Unity.Netcode.Components;
 
 public class DeathByPosition : NetworkBehaviour
 {
+    [Header("Ragdoll")]
+    public Transform bodyTarget;
+
     [Header("Wall Limits")]
     public float minY = -10f;
     public float maxY = 100f;
@@ -29,6 +32,8 @@ public class DeathByPosition : NetworkBehaviour
     public PlayerHealth Health;
 
     private bool isGameOver = false;
+    private RagdollController ragdollController;
+
 
     public override void OnNetworkSpawn()
     {
@@ -52,16 +57,27 @@ public class DeathByPosition : NetworkBehaviour
     {
         rb = GetComponent<Rigidbody>();
         Health = GetComponent<PlayerHealth>();
+        ragdollController = GetComponent<RagdollController>();
 
+        // Auto-grab hips from RagdollCameraRotate if not manually assigned
+        if (bodyTarget == null)
+        {
+            var ragdollCam = GetComponent<RagdollCameraRotate>();
+            if (ragdollCam != null && ragdollCam.target != null)
+                bodyTarget = ragdollCam.target;
+        }
     }
 
     void Update()
     {
-        if (!IsServer || !IsSpawned || isRespawning) return;
+        if (!IsServer || !IsSpawned || isRespawning || isGameOver) return;
 
-        Vector3 pos = transform.position;
+        bool isRagdolled = ragdollController != null && ragdollController.RagMode;
+        Vector3 pos = (isRagdolled && bodyTarget != null) ? bodyTarget.position : transform.position;
 
-        if (pos.y >= maxY || pos.y <= minY || pos.x >= maxX || pos.x <= minX || pos.z >= maxZ || pos.z <= minZ)
+        if (pos.y >= maxY || pos.y <= minY ||
+            pos.x >= maxX || pos.x <= minX ||
+            pos.z >= maxZ || pos.z <= minZ)
         {
             Die();
         }
@@ -69,7 +85,7 @@ public class DeathByPosition : NetworkBehaviour
 
     void Die()
     {
-        if (isGameOver) return; // don't respawn if already eliminated
+        if (isGameOver || isRespawning) return;
 
         isRespawning = true;
         currentLives.Value--;
@@ -86,25 +102,77 @@ public class DeathByPosition : NetworkBehaviour
 
     void Respawn()
     {
-        TeleportOwnerRpc(respawnPoint.position);
-        StartCoroutine(RespawnDelay()); // Delay re-enabling Die() so NetworkTransform has time to sync the new position
+        Vector3 spawnPos = GetRandomSpawnPoint();
+        TeleportOwnerRpc(spawnPos);
+        StartCoroutine(RespawnDelay());
+    }
+
+    private Vector3 GetRandomSpawnPoint()
+    {
+        if (SpawnManager.Instance != null && SpawnManager.Instance.spawnPoints.Count > 0)
+        {
+            int index = Random.Range(0, SpawnManager.Instance.spawnPoints.Count);
+            return SpawnManager.Instance.spawnPoints[index].position;
+        }
+
+        // Fallback to origin if SpawnManager not found
+        Debug.LogWarning("SpawnManager not found, respawning at origin");
+        return Vector3.zero;
     }
 
     [Rpc(SendTo.Owner)]
     private void TeleportOwnerRpc(Vector3 position)
     {
-        GetComponent<NetworkTransform>().Teleport(position, transform.rotation, transform.localScale);
-        if (rb != null)
+        if (ragdollController != null && ragdollController.RagMode)
         {
-            rb.linearVelocity = Vector3.zero;
-            rb.angularVelocity = Vector3.zero;
-            rb.Sleep();
+            // Freeze all ragdoll bones using the controller's own array
+            foreach (var ragdollRb in ragdollController.limbsRigidbodies)
+            {
+                ragdollRb.isKinematic = true;
+                Vector3 localOffset = ragdollRb.transform.position - ragdollController.pelvis.position;
+                ragdollRb.transform.position = position + localOffset;
+            }
+
+            StartCoroutine(ReleaseRagdollAfterTeleport(position));
         }
+        else
+        {
+            // Upright — normal teleport
+            GetComponent<NetworkTransform>().Teleport(position, transform.rotation, transform.localScale);
+            if (rb != null && !rb.isKinematic)
+            {
+                rb.linearVelocity = Vector3.zero;
+                rb.angularVelocity = Vector3.zero;
+            }
+        }
+
+        // Move the root transform
+        ragdollController.MainTransform.position = position;
+    }
+
+    private IEnumerator ReleaseRagdollAfterTeleport(Vector3 position)
+    {
+        // Hold for a few fixed frames so physics registers the ground
+        yield return new WaitForFixedUpdate();
+        yield return new WaitForFixedUpdate();
+        yield return new WaitForFixedUpdate();
+
+        // Re-enable physics on ragdoll bones using the controller's array
+        foreach (var ragdollRb in ragdollController.limbsRigidbodies)
+        {
+            ragdollRb.isKinematic = false;
+            ragdollRb.linearVelocity = Vector3.zero;
+            ragdollRb.angularVelocity = Vector3.zero;
+            ragdollRb.Sleep();
+        }
+
+        // Teleport root now that bones are settled
+        GetComponent<NetworkTransform>().Teleport(position, transform.rotation, transform.localScale);
     }
 
     private IEnumerator RespawnDelay()
     {
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(1f);
         isRespawning = false;
     }
 
@@ -115,10 +183,47 @@ public class DeathByPosition : NetworkBehaviour
 
         Debug.Log($"Client {OwnerClientId} is out of lives");
 
-        // Keep object alive on server for network integrity,
-        // but tell the owner to enter spectator mode
+        DisablePlayerServerRpc();
+
         EnterSpectatorModeRpc();
     }
+
+    // Runs on server — disables the object for all clients
+    [Rpc(SendTo.Server)]
+    private void DisablePlayerServerRpc()
+    {
+        // Disable all MonoBehaviours except DeathByPosition and NetworkBehaviours
+        // so the network object stays alive but the player can't do anything
+        foreach (var mono in GetComponents<MonoBehaviour>())
+            if (mono is not DeathByPosition && mono is not NetworkBehaviour)
+                mono.enabled = false;
+
+        // Disable the ragdoll rig entirely so no bones are active
+        if (ragdollController != null)
+            ragdollController.PlayerRig.SetActive(false);
+
+        // Disable hitbox
+        if (ragdollController != null)
+            ragdollController.Hitbox.enabled = false;
+
+        // Disable all renderers for all clients
+        DisableVisualsClientRpc();
+
+
+    }
+
+    [ClientRpc]
+    private void DisableVisualsClientRpc()
+    {
+        // Disable all renderers on every client so no one can see the dead body
+        foreach (var r in GetComponentsInChildren<Renderer>())
+            r.enabled = false;
+
+        // Disable the rig on all clients too
+        if (ragdollController != null)
+            ragdollController.PlayerRig.SetActive(false);
+    }
+
 
     [Rpc(SendTo.Owner)]
     private void EnterSpectatorModeRpc()
@@ -128,14 +233,16 @@ public class DeathByPosition : NetworkBehaviour
         if (playerCam != null)
             playerCam.enabled = false;
 
-        // Disable input/movement scripts
-        foreach (var input in GetComponents<MonoBehaviour>())
-            if (input is not DeathByPosition && input is not NetworkBehaviour)
-                input.enabled = false;
+        // Disable ragdoll camera too so pressing R does nothing
+        if (ragdollController != null)
+        {
+            ragdollController.enabled = false; // blocks R key input entirely
+        }
 
-        // Hide mesh
-        foreach (var r in GetComponentsInChildren<Renderer>())
-            r.enabled = false;
+        // Disable all input/movement scripts
+        foreach (var mono in GetComponents<MonoBehaviour>())
+            if (mono is not DeathByPosition && mono is not NetworkBehaviour)
+                mono.enabled = false;
 
         // Start spectating
         SpectatorController spectator = FindFirstObjectByType<SpectatorController>(FindObjectsInactive.Include);

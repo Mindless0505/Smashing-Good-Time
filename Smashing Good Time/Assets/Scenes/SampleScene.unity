@@ -35031,6 +35031,7 @@ MonoBehaviour:
   RagCamAudio: {fileID: 0}
   Sledge: {fileID: 0}
   Health: {fileID: 0}
+  limbsRigidbodies: []
 --- !u!54 &920190027
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -35071,6 +35072,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
+  bodyTarget: {fileID: 0}
   minY: -10
   maxY: 100
   maxX: 100

@@ -311,7 +311,7 @@ public class RagdollController : NetworkBehaviour
 
 
     Collider[] ragdollColliders;
-    Rigidbody[] limbsRigidbodies;
+    public Rigidbody[] limbsRigidbodies;
 
     void GatherRagdollBones()
     {

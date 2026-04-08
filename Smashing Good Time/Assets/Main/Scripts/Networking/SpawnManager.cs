@@ -4,9 +4,14 @@ using System.Collections.Generic;
 
 public class SpawnManager : NetworkBehaviour
 {
-    [SerializeField] private List<Transform> spawnPoints = new List<Transform>();
+    public List<Transform> spawnPoints = new List<Transform>();
     [SerializeField] private GameObject playerPrefab;
+    public static SpawnManager Instance;
 
+    private void Awake()
+    {
+        Instance = this;
+    }
     public override void OnNetworkSpawn()
     {
         if (IsServer)
