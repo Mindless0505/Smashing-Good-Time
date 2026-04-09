@@ -2,6 +2,7 @@ using System.Collections;
 using UnityEngine;
 using Unity.Netcode;
 using Unity.Netcode.Components;
+// using System.Numerics;
 
 public class DeathByPosition : NetworkBehaviour
 {
@@ -72,8 +73,9 @@ public class DeathByPosition : NetworkBehaviour
     {
         if (!IsServer || !IsSpawned || isRespawning || isGameOver) return;
 
-        bool isRagdolled = ragdollController != null && ragdollController.RagMode;
-        Vector3 pos = (isRagdolled && bodyTarget != null) ? bodyTarget.position : transform.position;
+        // bool isRagdolled = ragdollController != null && ragdollController.RagMode;
+        // Vector3 pos = (isRagdolled && bodyTarget != null) ? bodyTarget.position : transform.position;
+        Vector3 pos = ragdollController.pelvis.position;
 
         if (pos.y >= maxY || pos.y <= minY ||
             pos.x >= maxX || pos.x <= minX ||
@@ -129,34 +131,25 @@ public class DeathByPosition : NetworkBehaviour
             // Freeze all ragdoll bones using the controller's own array
             foreach (var ragdollRb in ragdollController.limbsRigidbodies)
             {
-                ragdollRb.isKinematic = true;
-                Vector3 localOffset = ragdollRb.transform.position - ragdollController.pelvis.position;
-                ragdollRb.transform.position = position + localOffset;
+                ragdollRb.linearVelocity = Vector3.zero;
+                ragdollRb.angularVelocity = Vector3.zero;
             }
-
-            StartCoroutine(ReleaseRagdollAfterTeleport(position));
+            // ragdollController.pelvis.position = position;
+            ragdollController.RagdollOffServerRpc(position);
+            
+  
         }
         else
         {
-            // Upright � normal teleport
+            //normal teleport
             GetComponent<NetworkTransform>().Teleport(position, transform.rotation, transform.localScale);
-            if (rb != null && !rb.isKinematic)
-            {
-                rb.linearVelocity = Vector3.zero;
-                rb.angularVelocity = Vector3.zero;
-            }
-        }
-
-        // Move the root transform
-        ragdollController.MainTransform.position = position;
+        }  
     }
 
     private IEnumerator ReleaseRagdollAfterTeleport(Vector3 position)
     {
         // Hold for a few fixed frames so physics registers the ground
-        yield return new WaitForFixedUpdate();
-        yield return new WaitForFixedUpdate();
-        yield return new WaitForFixedUpdate();
+        yield return new WaitForSeconds(.2f);
 
         // Re-enable physics on ragdoll bones using the controller's array
         foreach (var ragdollRb in ragdollController.limbsRigidbodies)

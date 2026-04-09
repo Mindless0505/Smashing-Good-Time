@@ -178,14 +178,14 @@ public class RagdollController : NetworkBehaviour
     //     RagdollOffServerRpc(standPos);
     // }
 
-    // [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
-    // private void RagdollOffServerRpc(Vector3 standPos)
-    // {
-    //     RagdollOffClientRpc(standPos);
-    // }
+    [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
+    public void RagdollOffServerRpc(Vector3 standPos)
+    {
+        RagdollOffClientRpc(standPos);
+    }
 
     [ClientRpc]
-    private void RagdollOffClientRpc(Vector3 standPos)
+    public void RagdollOffClientRpc(Vector3 standPos)
     {
         CaptureVelocityRag();
 

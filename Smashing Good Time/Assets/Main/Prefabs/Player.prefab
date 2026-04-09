@@ -1755,6 +1755,7 @@ MonoBehaviour:
   RagCamAudio: {fileID: 8255810581160359240}
   Sledge: {fileID: 4916710651593821289}
   Health: {fileID: 6402250428762846314}
+  limbsRigidbodies: []
 --- !u!114 &5411376580419281271
 MonoBehaviour:
   m_ObjectHideFlags: 0
