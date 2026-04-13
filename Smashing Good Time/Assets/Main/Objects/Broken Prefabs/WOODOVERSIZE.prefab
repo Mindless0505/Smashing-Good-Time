@@ -9,16 +9,20 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 031d96b9617d3324a972df758bfa2411, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 031d96b9617d3324a972df758bfa2411, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 42.90178
+      value: 46.93083
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 031d96b9617d3324a972df758bfa2411, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.09999816
+      value: 0.0982339
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 031d96b9617d3324a972df758bfa2411, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 77.06517
+      value: 37.855244
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 031d96b9617d3324a972df758bfa2411, type: 3}
       propertyPath: m_LocalRotation.w
@@ -90,7 +94,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 031d96b9617d3324a972df758bfa2411, type: 3}
       propertyPath: m_Name
-      value: DestroyedBeveledWoodPlank
+      value: DestroyedBeveledWoodPlank 1
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 031d96b9617d3324a972df758bfa2411, type: 3}
       propertyPath: m_Layer

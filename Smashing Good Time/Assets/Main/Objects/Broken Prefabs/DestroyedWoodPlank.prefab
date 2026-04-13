@@ -1185,7 +1185,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48a41ed1d0a3d6b4680ed5880b24f2bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fadeDuration: 3
+  fadeDuration: 4
 --- !u!1 &3432209374250647363 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 935711008431528201, guid: c82c62b1211ca9545a0786f386886302, type: 3}
