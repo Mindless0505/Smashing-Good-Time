@@ -41,6 +41,7 @@ public class PlayerMovement : NetworkBehaviour
     public float verticalInput;
 
     private ChatManager ChatManager;
+    public Animator animator;
 
     Vector3 moveDirection;
 
@@ -91,6 +92,7 @@ public class PlayerMovement : NetworkBehaviour
 
         horizontalInput = Input.GetAxisRaw("Horizontal");
         verticalInput = Input.GetAxisRaw("Vertical");
+        animator.SetBool("isWalking", false);
 
         // jump
         if (Input.GetKey(jumpKey) && jumpReady && grounded) 
@@ -110,6 +112,7 @@ public class PlayerMovement : NetworkBehaviour
         else
         {
             isSprinting = false;
+            animator.SetBool("isSprinting", false);
         }
 
         // Crouch (overrides sprint if both pressed)
@@ -122,6 +125,14 @@ public class PlayerMovement : NetworkBehaviour
 
     private void MovePlayer() 
     {
+        if (!isSprinting)
+        {
+            animator.SetBool("isWalking", true);
+        }
+        else
+        {
+            animator.SetBool("isSprinting", true);
+        }
         // calculate movement direction
         moveDirection = orientation.forward * verticalInput + orientation.right * horizontalInput;
         // on ground
@@ -142,6 +153,7 @@ public class PlayerMovement : NetworkBehaviour
     private void Sprint()
     {
         moveSpeed = sprintSpeed;
+        
     }
 
     private void Crouch()
