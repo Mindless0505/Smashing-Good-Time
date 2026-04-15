@@ -42,6 +42,8 @@ public class PlayerMovement : NetworkBehaviour
 
     private ChatManager ChatManager;
     public Animator animator;
+    int isWalkingHash;
+    int isSprintingHash;
 
     Vector3 moveDirection;
 
@@ -51,6 +53,8 @@ public class PlayerMovement : NetworkBehaviour
     {
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
+        isWalkingHash = Animator.StringToHash("isWalking");
+        isSprintingHash = Animator.StringToHash("isSprinting");
     }
 
     // Update is called once per frame
@@ -92,7 +96,30 @@ public class PlayerMovement : NetworkBehaviour
 
         horizontalInput = Input.GetAxisRaw("Horizontal");
         verticalInput = Input.GetAxisRaw("Vertical");
-        animator.SetBool("isWalking", false);
+
+        bool isWalking = animator.GetBool(isWalkingHash);
+        bool isSprintingAnim = animator.GetBool(isSprintingHash);
+        bool walkPress = Input.GetKey("w") || Input.GetKey("s");
+        if (!isWalking && walkPress)
+        {
+            animator.SetBool("isWalking", true);
+        }
+
+        if (isWalking && !walkPress)
+        {
+            animator.SetBool("isWalking", false);
+        }
+
+        if (walkPress && isSprinting && grounded && !isSprintingAnim)
+        {
+            animator.SetBool("isSprinting", true);
+        }
+
+        if (!isSprinting && isSprintingAnim)
+        {
+            animator.SetBool("isSprinting", false);
+        }
+        
 
         // jump
         if (Input.GetKey(jumpKey) && jumpReady && grounded) 
@@ -112,7 +139,7 @@ public class PlayerMovement : NetworkBehaviour
         else
         {
             isSprinting = false;
-            animator.SetBool("isSprinting", false);
+            // if (isSprintingAnim) animator.SetBool("isSprinting", false);
         }
 
         // Crouch (overrides sprint if both pressed)
@@ -125,15 +152,8 @@ public class PlayerMovement : NetworkBehaviour
 
     private void MovePlayer() 
     {
-        if (!isSprinting)
-        {
-            animator.SetBool("isWalking", true);
-        }
-        else
-        {
-            animator.SetBool("isSprinting", true);
-        }
-        // calculate movement direction
+
+   
         moveDirection = orientation.forward * verticalInput + orientation.right * horizontalInput;
         // on ground
         if (grounded)

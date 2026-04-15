@@ -607,6 +607,9 @@ MonoBehaviour:
   orientation: {fileID: 7652167074971804034}
   xRotation: 0
   yRotation: 0
+  MainCam: {fileID: 6809821254135934710}
+  MainTransform: {fileID: 7833107391762156949}
+  CamOn: 0
 --- !u!114 &2013335273657785300
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1756,6 +1759,7 @@ MonoBehaviour:
   RagCamAudio: {fileID: 8255810581160359240}
   Sledge: {fileID: 4916710651593821289}
   Health: {fileID: 6402250428762846314}
+  PlayerCam: {fileID: 1375786560882957218}
   limbsRigidbodies: []
 --- !u!114 &5411376580419281271
 MonoBehaviour:
@@ -2110,6 +2114,9 @@ PrefabInstance:
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6015245021630786908, guid: 9bb2750b8841dc44baa39e3b87eaee3f, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4160977206990477460}
     - targetCorrespondingSourceObject: {fileID: 2105691233262987825, guid: 9bb2750b8841dc44baa39e3b87eaee3f, type: 3}
       insertIndex: -1
       addedObject: {fileID: 8470845866426883448}
@@ -3325,6 +3332,39 @@ MonoBehaviour:
   SwitchTransformSpaceWhenParented: 0
   Interpolate: 1
   SlerpPosition: 0
+--- !u!1 &7493735824161773359 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6015245021630786908, guid: 9bb2750b8841dc44baa39e3b87eaee3f, type: 3}
+  m_PrefabInstance: {fileID: 3784545949313235571}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &4160977206990477460
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7493735824161773359}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8d0727d5ae3244e3b569694d3912374, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  NetworkAnimatorExpanded: 0
+  AuthorityMode: 1
+  m_Animator: {fileID: 4203236687209666543}
+  TransitionStateInfoList: []
+  AnimatorParameterEntries:
+    ParameterEntries:
+    - name: isWalking
+      NameHash: -830007593
+      Synchronize: 1
+      ParameterType: 4
+    - name: isSprinting
+      NameHash: 1125312739
+      Synchronize: 1
+      ParameterType: 4
+  AnimatorParametersExpanded: 0
 --- !u!1 &7575257374742716966 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6748028380455098453, guid: 9bb2750b8841dc44baa39e3b87eaee3f, type: 3}

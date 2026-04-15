@@ -15,7 +15,9 @@ public class PlayerCamera : NetworkBehaviour
     public float xRotation;
     public float yRotation;
 
-
+    public Camera MainCam;
+    public Transform MainTransform;
+    public bool CamOn;
     void Start()
     {
 
@@ -49,6 +51,15 @@ public class PlayerCamera : NetworkBehaviour
         // rotate cam and orientation
         transform.rotation = Quaternion.Euler(xRotation,yRotation,0);
         orientation.rotation = Quaternion.Euler(0,yRotation,0);
-        
+
+
+        if (CamOn && IsOwner)
+        {
+            Vector3 camForward = MainCam.transform.forward;
+            camForward.y = 0f;
+            camForward.Normalize();
+
+            MainTransform.forward = camForward;
+        }
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
 using Unity.Netcode.Components;
+using Unity.Services.Lobbies.Models;
 
 public class RagdollController : NetworkBehaviour
 {
@@ -42,6 +43,7 @@ public class RagdollController : NetworkBehaviour
 
     public SledgeAttack Sledge;
     public PlayerHealth Health;
+    public PlayerCamera PlayerCam;
 
     void Awake()
     {   
@@ -121,6 +123,7 @@ public class RagdollController : NetworkBehaviour
         if (IsOwner)
         {
             MainCam.enabled = true;
+            PlayerCam.CamOn =true;
             MainCamAudio.enabled = true;
             RagCam.enabled = false;
             RagCamAudio.enabled = false;
@@ -165,6 +168,7 @@ public class RagdollController : NetworkBehaviour
         if (IsOwner)
         {
             MainCam.enabled = false;
+            PlayerCam.CamOn = false;
             MainCamAudio.enabled = false;
             RagCam.enabled = true;
             RagCamAudio.enabled = true;
@@ -219,6 +223,7 @@ public class RagdollController : NetworkBehaviour
         if (IsOwner)
         {
             MainCam.enabled = true;
+            PlayerCam.CamOn = true;
             MainCamAudio.enabled = true;
             RagCam.enabled = false;
             RagCamAudio.enabled = false;
@@ -288,6 +293,7 @@ public class RagdollController : NetworkBehaviour
         if (IsOwner)
         {
             MainCam.enabled = false;
+            PlayerCam.CamOn = false;
             MainCamAudio.enabled = false;
             RagCam.enabled = true;
             RagCamAudio.enabled = true;
