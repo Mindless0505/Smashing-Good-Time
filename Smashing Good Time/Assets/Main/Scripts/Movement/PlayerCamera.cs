@@ -20,11 +20,20 @@ public class PlayerCamera : NetworkBehaviour
     public bool CamOn;
     void Start()
     {
-
+        if(!IsOwner) return;
         // lock cursor in middle and stop it from being visible
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
+    }
+
+    public override void OnNetworkSpawn()
+    {
+        if (!IsOwner)
+        {
+            enabled = false; // disable the whole script on non-owners
+            return;
+        }
     }
 
     // Update is called once per frame
@@ -57,9 +66,12 @@ public class PlayerCamera : NetworkBehaviour
         {
             Vector3 camForward = MainCam.transform.forward;
             camForward.y = 0f;
-            camForward.Normalize();
 
+        if (camForward.sqrMagnitude > 0.001f)
+        {
+            camForward.Normalize();
             MainTransform.forward = camForward;
+        }
         }
     }
 }

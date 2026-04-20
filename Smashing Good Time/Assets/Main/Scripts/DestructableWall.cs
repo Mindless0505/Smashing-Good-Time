@@ -48,19 +48,65 @@ public class DestructableWall : NetworkBehaviour
         Physics.IgnoreLayerCollision(gameObject.layer, LayerMask.NameToLayer("Crumbs"), true);
     }
 
+    // private void OnCollisionEnter(Collision collision)
+    // {
+    //     // Only process collisions on the server and if the wall isn't already destroyed
+    //     if (!IsServer || isDestroyed) return;
+
+    //     if (collision.gameObject.layer == LayerMask.NameToLayer("Crumbs")) return;
+
+
+    //     // Calculate the impact strength 
+    //     float impactStrength = collision.relativeVelocity.magnitude;
+    //     requiredHealth -= impactStrength;
+
+    //     //Check if the impact is strong enough to destroy the wall or if the wall's health has been depleted
+    //     if (impactStrength >= requiredFallImpact)
+    //     {
+    //         Wallrb.constraints = RigidbodyConstraints.None;
+    //         netObj.enabled = true;
+    //         netRb.enabled = true;
+    //         netTransform.enabled = true;
+    //         gameObject.tag = "Throwable";
+    //     }
+    //     if (impactStrength >= requiredImpact || requiredHealth <= 0f)
+    //     {
+    //         DestroyWall(impactStrength);
+            
+    //     }
+    // }
+
     private void OnCollisionEnter(Collision collision)
     {
-        // Only process collisions on the server and if the wall isn't already destroyed
-        if (!IsServer || isDestroyed) return;
-
+        if (isDestroyed) return;
         if (collision.gameObject.layer == LayerMask.NameToLayer("Crumbs")) return;
 
-
-        // Calculate the impact strength 
         float impactStrength = collision.relativeVelocity.magnitude;
+
+        if (IsServer)
+        {
+            ProcessImpact(impactStrength);
+        }
+        else
+        {
+            // Client reports collision to server
+            SharedPhysics sp = GetComponent<SharedPhysics>();
+            if (sp != null)
+                ReportImpactServerRpc(impactStrength);
+        }
+    }
+
+    [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
+    private void ReportImpactServerRpc(float impactStrength)
+    {
+        if (isDestroyed) return;
+        ProcessImpact(impactStrength);
+    }
+
+    private void ProcessImpact(float impactStrength)
+    {
         requiredHealth -= impactStrength;
 
-        //Check if the impact is strong enough to destroy the wall or if the wall's health has been depleted
         if (impactStrength >= requiredFallImpact)
         {
             Wallrb.constraints = RigidbodyConstraints.None;
@@ -72,7 +118,6 @@ public class DestructableWall : NetworkBehaviour
         if (impactStrength >= requiredImpact || requiredHealth <= 0f)
         {
             DestroyWall(impactStrength);
-            
         }
     }
 
