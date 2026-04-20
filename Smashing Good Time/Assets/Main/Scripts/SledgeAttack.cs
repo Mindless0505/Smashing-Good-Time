@@ -118,8 +118,7 @@ public class SledgeAttack : NetworkBehaviour
             Invoke(nameof(ResetAttack), attackSpeed);
             Invoke(nameof(AttackRaycast), attackDelay);
 
-            audioSource.pitch = Random.Range(0.9f,1.1f);
-            audioSource.PlayOneShot(hammerSwing);
+            PlaySwingSoundServerRpc();
 
       
     }
@@ -156,8 +155,7 @@ public class SledgeAttack : NetworkBehaviour
 
     void HitTarget(RaycastHit hit)
     {
-        audioSource.pitch = Random.Range(0.9f,1.1f);
-        audioSource.PlayOneShot(hitSound);
+        PlayHitSoundServerRpc(hit.point);
 
         Rigidbody rb = hit.collider.attachedRigidbody;
         if (rb != null)
@@ -195,5 +193,30 @@ public class SledgeAttack : NetworkBehaviour
         }
 
     }
+
+
+    [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
+private void PlaySwingSoundServerRpc()
+{
+    PlaySwingSoundClientRpc();
+}
+
+[ClientRpc]
+private void PlaySwingSoundClientRpc()
+{
+    AudioUtils.PlaySoundFollowing(hammerSwing,transform, 0.9f, 1.1f, IsOwner);
+}
+
+[Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
+private void PlayHitSoundServerRpc(Vector3 hitpoint)
+{
+    PlayHitSoundClientRpc(hitpoint);
+}
+
+[ClientRpc]
+private void PlayHitSoundClientRpc(Vector3 hitpoint)
+{
+    AudioUtils.PlayAtPoint(hitSound, hitpoint, .9f, 1.1f, IsOwner);
+}
 
 }
