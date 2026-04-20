@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using Random = UnityEngine.Random;
 using Unity.Netcode;
+using Unity.VisualScripting;
 
 public class SledgeAttack : NetworkBehaviour
 {
@@ -132,18 +133,25 @@ public class SledgeAttack : NetworkBehaviour
 
     void AttackRaycast()
     {
-        if(VisualActive==true)
+        if(!VisualActive) return;
+
+        int rayCount = 8; // number of rays in the sweep
+        float spreadAngle = 20f;
+
+        for (int i = 0; i < rayCount; i++)
         {
-            
-            if(Physics.Raycast(cam.transform.position, cam.transform.forward, out RaycastHit hit, attackDistance, attackLayer))
+             float angle = -spreadAngle / 2f + (spreadAngle / (rayCount - 1)) * i;
+             Quaternion rotation = Quaternion.AngleAxis(angle, cam.transform.up);
+             Vector3 dir = rotation * cam.transform.forward;
+
+            if(Physics.Raycast(cam.transform.position, dir, out RaycastHit hit, attackDistance, attackLayer))
             {
-
-                if(IsOwner && hit.transform.root == playerRoot.transform)
-                    return;
-
+                if (IsOwner && hit.transform.root == playerRoot.transform) continue;
                 HitTarget(hit);
+                break;
             }
         }
+
     }
 
     void HitTarget(RaycastHit hit)

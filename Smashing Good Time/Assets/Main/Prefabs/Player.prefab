@@ -1455,7 +1455,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 641
   hammerSwing: {fileID: 8300000, guid: 1dbdd00c4b571ca41a0224aaf1b2e158, type: 3}
-  hitSound: {fileID: 8300000, guid: 2d21702a9dff388479e7d48a070c146c, type: 3}
+  hitSound: {fileID: 8300000, guid: 615e30b076e93464891e23ce648a5fcd, type: 3}
   cam: {fileID: 6809821254135934710}
   sledgeHammer: {fileID: 544456954672255377}
   playerRoot: {fileID: 9041923656687872667}

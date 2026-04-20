@@ -166,7 +166,7 @@ public class DestructableWall : NetworkBehaviour
             Destroy(gameObject);
         }
 
-        if (impactStrength >40f)
+        if (impactStrength >30f)
         {
             audioSource.PlayOneShot(heavyImpactSound);
         }
