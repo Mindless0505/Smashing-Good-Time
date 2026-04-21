@@ -85,13 +85,19 @@ public class SpectatorController : MonoBehaviour
                       && !no.IsOwner)
             .Select(no =>
             {
-                // If they're ragdolled, follow their ragdoll target (hips)
-                // instead of the player root
+                // 1. Always prefer the explicit ragdoll camera target (hips)
                 var ragdollCam = no.GetComponent<RagdollCameraRotate>();
                 if (ragdollCam != null && ragdollCam.target != null)
                     return ragdollCam.target;
 
-                return no.transform; // fallback to root if not ragdolled
+                // 2. Fallback: search all children for a hip bone by name
+                var hips = no.GetComponentsInChildren<Transform>(includeInactive: true)
+                    .FirstOrDefault(t => t.name.IndexOf("Hips", StringComparison.OrdinalIgnoreCase) >= 0);
+                if (hips != null)
+                    return hips;
+
+                // 3. Last resort: player root
+                return no.transform;
             })
             .ToArray();
 

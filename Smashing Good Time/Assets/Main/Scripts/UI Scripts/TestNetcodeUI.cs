@@ -27,6 +27,9 @@ public class TestNetcodeUI : MonoBehaviour
     private bool hasClientStarted = false;
     public Lobby currentLobby;
 
+    private Coroutine connectionTimeoutCoroutine;
+    private float connectionTimeout = 5f;
+
     #region On-Screen Debug
     private string debugLog = "";
     private void Log(string msg)
@@ -45,7 +48,6 @@ public class TestNetcodeUI : MonoBehaviour
 
     private async void Awake()
     {
-
 
         try
         {
@@ -69,6 +71,12 @@ public class TestNetcodeUI : MonoBehaviour
             LogError("Unity Services initialization failed: " + e);
         }
 
+        if (GameResetter.Instance != null)
+        {
+            StartCoroutine(ReconnectAfterDelay());
+            return;
+        }
+
         StartHostButton.onClick.AddListener(async () =>
         {
             if (hasHostStarted) return;
@@ -84,6 +92,17 @@ public class TestNetcodeUI : MonoBehaviour
             await StartClientAsync();
             HideUI();
         });
+
+    }
+
+    private IEnumerator ReconnectAfterDelay()
+    {
+        yield return null;
+        if (GameResetter.Instance.wasHost)
+            NetworkManager.Singleton.StartHost();
+        else
+            NetworkManager.Singleton.StartClient();
+        HideUI();
     }
 
     #region Host
@@ -173,13 +192,31 @@ public class TestNetcodeUI : MonoBehaviour
         try
         {
             string code = LobbyCodeInput.text.Trim();
+
+            // Validate input before even trying
+            if (string.IsNullOrEmpty(code))
+            {
+                LogError("Please enter a lobby code.");
+                hasClientStarted = false;
+                return;
+            }
+
             Log("Joining lobby: " + code);
 
-            // Join Lobby
-            Lobby lobby = await LobbyService.Instance.JoinLobbyByCodeAsync(code);
+            Lobby lobby;
+            try
+            {
+                lobby = await LobbyService.Instance.JoinLobbyByCodeAsync(code);
+            }
+            catch (LobbyServiceException e)
+            {
+                LogError("Failed to find lobby: " + e.Reason);
+                hasClientStarted = false;
+                return;
+            }
+
             Log("Lobby joined! Players: " + lobby.Players.Count);
 
-            // --- FIX 1: Poll until relay code is available ---
             string relayCode = null;
             int maxAttempts = 10;
 
@@ -219,11 +256,11 @@ public class TestNetcodeUI : MonoBehaviour
             {
                 Log("Available region: " + region.Id);
             }
+
             Log("About to join relay...");
             JoinAllocation joinAllocation = await RelayService.Instance.JoinAllocationAsync(relayCode);
             Log("Relay joined!");
 
-            // Configure transport
             var transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
             var relayServerData = new RelayServerData(
                 joinAllocation.RelayServer.IpV4,
@@ -232,13 +269,17 @@ public class TestNetcodeUI : MonoBehaviour
                 joinAllocation.ConnectionData,
                 joinAllocation.HostConnectionData,
                 joinAllocation.Key,
-                false,   // isSecure
-                false    // isWebSocket
+                false,
+                false
             );
             transport.SetRelayServerData(relayServerData);
 
             NetworkManager.Singleton.StartClient();
-            Log("Client started!");
+            Log("Client started! Waiting for connection...");
+
+            connectionTimeoutCoroutine = StartCoroutine(ConnectionTimeout());
+            NetworkManager.Singleton.OnClientConnectedCallback += OnConnected;
+            NetworkManager.Singleton.OnClientDisconnectCallback += OnDisconnected;
         }
         catch (System.Exception e)
         {
@@ -265,6 +306,46 @@ public class TestNetcodeUI : MonoBehaviour
         }
     }
     #endregion
+
+    private void OnConnected(ulong clientId)
+    {
+        if (connectionTimeoutCoroutine != null)
+            StopCoroutine(connectionTimeoutCoroutine);
+
+        NetworkManager.Singleton.OnClientConnectedCallback -= OnConnected;
+        NetworkManager.Singleton.OnClientDisconnectCallback -= OnDisconnected;
+
+        Log("Connected successfully!");
+        HideUI();
+    }
+
+    private void OnDisconnected(ulong clientId)
+    {
+        if (connectionTimeoutCoroutine != null)
+            StopCoroutine(connectionTimeoutCoroutine);
+
+        NetworkManager.Singleton.OnClientConnectedCallback -= OnConnected;
+        NetworkManager.Singleton.OnClientDisconnectCallback -= OnDisconnected;
+
+        hasClientStarted = false;
+        LogError("Disconnected or failed to connect.");
+    }
+
+    private IEnumerator ConnectionTimeout()
+    {
+        yield return new WaitForSeconds(connectionTimeout);
+
+        // If we're still not connected, bail out
+        if (!NetworkManager.Singleton.IsConnectedClient)
+        {
+            LogError("Connection timed out after " + connectionTimeout + " seconds.");
+            NetworkManager.Singleton.Shutdown();
+            hasClientStarted = false;
+
+            NetworkManager.Singleton.OnClientConnectedCallback -= OnConnected;
+            NetworkManager.Singleton.OnClientDisconnectCallback -= OnDisconnected;
+        }
+    }
 
     private void HideUI()
     {

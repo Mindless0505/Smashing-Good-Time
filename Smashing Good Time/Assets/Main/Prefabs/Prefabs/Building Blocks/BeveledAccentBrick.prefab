@@ -100,6 +100,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 863d1cf7c2449c447a1b5ce134779f6f, type: 3}
       insertIndex: -1
       addedObject: {fileID: 8814582571040922163}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 863d1cf7c2449c447a1b5ce134779f6f, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: -8501177758329008109}
   m_SourcePrefab: {fileID: 100100000, guid: 863d1cf7c2449c447a1b5ce134779f6f, type: 3}
 --- !u!1 &2871521148705877057 stripped
 GameObject:
@@ -166,7 +169,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 2530345877
+  GlobalObjectIdHash: 1568380903
   InScenePlacedSourceGlobalObjectIdHash: 1568380903
   DeferredDespawnTick: 0
   Ownership: 1
@@ -296,3 +299,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
+--- !u!114 &-8501177758329008109
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2871521148705877057}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 27dcfebc29719ce4c890e0c1e1ba46f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minY: -10
+  maxY: 100
+  maxX: 100
+  minX: -100
+  maxZ: 100
+  minZ: -100

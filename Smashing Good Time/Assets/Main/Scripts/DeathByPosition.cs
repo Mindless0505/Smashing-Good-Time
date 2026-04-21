@@ -43,8 +43,44 @@ public class DeathByPosition : NetworkBehaviour
         if (IsServer)
             currentLives.Value = lives;
 
+        // Force HUD update since OnValueChanged won't fire for the initial set
+        if (HUDManager.Instance != null)
+            HUDManager.Instance.UpdateLives(OwnerClientId, lives, lives);
+
         if (respawnPoint == null)
             respawnPoint = GameObject.Find("RespawnPoint").transform;
+
+        // Reset dead player state
+        isGameOver = false;
+        isRespawning = false;
+
+        // Re-enable all MonoBehaviours
+        foreach (var mono in GetComponents<MonoBehaviour>())
+            mono.enabled = true;
+
+        // Re-enable rig and hitbox
+        if (ragdollController != null)
+        {
+            ragdollController.PlayerRig.SetActive(true);
+            ragdollController.Hitbox.enabled = true;
+        }
+
+        // Re-enable renderers
+        foreach (var r in GetComponentsInChildren<Renderer>())
+            r.enabled = true;
+
+        // Re-enable player camera (owner only)
+        if (IsOwner)
+        {
+            Camera playerCam = GetComponentInChildren<Camera>();
+            if (playerCam != null)
+                playerCam.enabled = true;
+
+            // Disable spectator if it was active
+            SpectatorController spectator = FindFirstObjectByType<SpectatorController>(FindObjectsInactive.Include);
+            if (spectator != null)
+                spectator.gameObject.SetActive(false);
+        }
     }
 
     private void OnLivesChanged(int oldVal, int newVal)
