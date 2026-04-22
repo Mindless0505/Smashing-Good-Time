@@ -115,7 +115,7 @@ public class PlayerMovement : NetworkBehaviour
             animator.SetBool("isSprinting", true);
         }
 
-        if (!isSprinting && isSprintingAnim)
+        if (!walkPress && !isSprinting && isSprintingAnim)
         {
             animator.SetBool("isSprinting", false);
         }
