@@ -1,6 +1,7 @@
 using Unity.Netcode;
 using UnityEngine;
 using Unity.Netcode.Components;
+// using System.Numerics;
 
 public class DestructableWall : NetworkBehaviour
 {
@@ -9,6 +10,7 @@ public class DestructableWall : NetworkBehaviour
     public float requiredFallImpact = 10f;
     public float requiredHealth = 50f;
     public int oddsOfSpawningCrumbs = 10;
+    private float RequiredHeavyHit = 20f;
 
     // Wall that replaces
     [SerializeField] private GameObject destroyedWallPrefab;
@@ -135,6 +137,8 @@ public class DestructableWall : NetworkBehaviour
         if (IsServer)
         {
             SpawnFragmentsClientRpc(transform.position, transform.rotation);
+
+            PlayBreakSoundClientRpc(transform.position, impactStrength);
         }
 
 
@@ -166,14 +170,7 @@ public class DestructableWall : NetworkBehaviour
             Destroy(gameObject);
         }
 
-        if (impactStrength >30f)
-        {
-            audioSource.PlayOneShot(heavyImpactSound);
-        }
-        else
-        {
-            AudioSource.PlayClipAtPoint(impactSounds[Random.Range(0, impactSounds.Length)], transform.position);
-        }
+
     }
 
     // ClientRpc to spawn fragments on all clients
@@ -184,5 +181,18 @@ public class DestructableWall : NetworkBehaviour
         if (IsServer) return;
         // Spawn fragments on clients
         Instantiate(destroyedWallPrefab, position, rotation);
+    }
+
+    [ClientRpc]
+    private void PlayBreakSoundClientRpc(Vector3 position, float impactStrength)
+    {
+        if (impactStrength >RequiredHeavyHit)
+        {
+            AudioSource.PlayClipAtPoint(heavyImpactSound, position);
+        }
+        else
+        {
+            AudioSource.PlayClipAtPoint(impactSounds[Random.Range(0, impactSounds.Length)], position);
+        }
     }
 }
