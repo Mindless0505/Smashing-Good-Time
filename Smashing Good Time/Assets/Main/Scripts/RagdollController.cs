@@ -28,6 +28,10 @@ public class RagdollController : NetworkBehaviour
     private float minimumThreshold = 0.5f;
     private float threshPercent = 0.05f;
     private float threshold = 0f;
+    private float ragdollTime = 0f;
+    private float peakVelocity = 0f;
+    [SerializeField] private float measurementDuration = 1f;
+    private bool measuringPeak = true;
 
     [SerializeField] private float requiredImpact = 15f;
 
@@ -81,11 +85,24 @@ public class RagdollController : NetworkBehaviour
 
         if (RagMode && !canStand)
         {
+            ragdollTime += Time.deltaTime;
+
             float currentSpeed = PelvisRigidbody.linearVelocity.magnitude;
-        
-            if (currentSpeed <= Mathf.Max(threshold, minimumThreshold))
+
+            if (measuringPeak)
             {
-                canStand = true;
+                // Track highest velocity during measurement window
+                peakVelocity = Mathf.Max(peakVelocity, currentSpeed);
+
+                if (ragdollTime >= measurementDuration)
+                    measuringPeak = false; // window closed, threshold is now locked in
+            }
+            else
+            {
+                // Must be below 5% of peak to stand
+                float standThreshold = Mathf.Max(peakVelocity * threshPercent, minimumThreshold);
+                if (currentSpeed <= standThreshold)
+                    canStand = true;
             }
         }
 
@@ -163,6 +180,9 @@ public class RagdollController : NetworkBehaviour
         initialRagdollSpeed = PelvisRigidbody.linearVelocity.magnitude;
         threshold = initialRagdollSpeed * threshPercent;
         canStand = false;
+        ragdollTime = 0f;
+        peakVelocity = 0f;
+        measuringPeak = true;   
 
         // Cameras only matter for the owner
         if (IsOwner)
@@ -289,6 +309,9 @@ public class RagdollController : NetworkBehaviour
         initialRagdollSpeed = PelvisRigidbody.linearVelocity.magnitude;
         threshold = initialRagdollSpeed * threshPercent;
         canStand = false;
+        ragdollTime = 0f;
+        peakVelocity = 0f;
+        measuringPeak = true;
 
         if (IsOwner)
         {
