@@ -111,7 +111,6 @@ public class SledgeAttack : NetworkBehaviour
         
         readyToAttack = false;
         attacking = true;
-;
 
         hammerAnimator.SetTrigger("Swing");
 
