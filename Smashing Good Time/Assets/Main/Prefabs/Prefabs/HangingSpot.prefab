@@ -142,7 +142,10 @@ MonoBehaviour:
 
     R: Ragdoll
 
-    Space: Get up'
+    Space: Get up
+
+    CTRL:
+    Crouch'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -469,7 +472,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48a41ed1d0a3d6b4680ed5880b24f2bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  despawnDelay: 60
+  despawnDelay: 90
 --- !u!1001 &1203120643686181378
 PrefabInstance:
   m_ObjectHideFlags: 0
