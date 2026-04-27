@@ -17,4 +17,5 @@ public class PropCollision : NetworkBehaviour
         Vector3 force = -col.contacts[0].normal * rb.linearVelocity.magnitude * rb.mass;
         sp.rb.AddForce(force, ForceMode.Impulse);
     }
+
 }
