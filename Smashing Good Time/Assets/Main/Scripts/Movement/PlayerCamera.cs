@@ -41,7 +41,7 @@ public class PlayerCamera : NetworkBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void LateUpdate()
     {
         // if(SceneManager.GetActiveScene().name =="Game")
         // {
@@ -68,7 +68,7 @@ public class PlayerCamera : NetworkBehaviour
 
         // get the mouse input
         float mouseX = Input.GetAxisRaw("Mouse X") * Time.deltaTime * sensX;
-        float mouseY = Input.GetAxisRaw("Mouse Y") * Time.deltaTime * sensX;
+        float mouseY = Input.GetAxisRaw("Mouse Y") * Time.deltaTime * sensY;
 
         yRotation += mouseX;
         xRotation -= mouseY;

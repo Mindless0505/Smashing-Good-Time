@@ -16,7 +16,7 @@ public class MoveCamera : NetworkBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void LateUpdate()
     {
         if (!IsOwner) return;
         transform.position = cameraPosition.position;
