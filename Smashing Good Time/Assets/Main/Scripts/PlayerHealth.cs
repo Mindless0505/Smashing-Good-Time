@@ -45,7 +45,7 @@ public class PlayerHealth : NetworkBehaviour
     {
         if (Hammer)
         {
-            damPerc.Value += Random.Range(15,30);  
+            damPerc.Value += Random.Range(15,25);  
         }
         else
         {
