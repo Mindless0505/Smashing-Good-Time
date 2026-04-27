@@ -20,6 +20,7 @@ public class SledgeAttack : NetworkBehaviour
     public int attackDamage= 1;
     public float HammerForce =5f;
     public LayerMask attackLayer;
+    private float spreadAngle = 60f;
 
     public AudioClip hammerSwing;
     public AudioClip hitSound;
@@ -134,7 +135,7 @@ public class SledgeAttack : NetworkBehaviour
         if(!VisualActive) return;
 
         int rayCount = 8; // number of rays in the sweep
-        float spreadAngle = 20f;
+        
 
         for (int i = 0; i < rayCount; i++)
         {
