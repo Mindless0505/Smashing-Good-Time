@@ -14,7 +14,16 @@ public class PlayerMovement : NetworkBehaviour
     public float originalMoveSpeed;
     public float sprintSpeed;
     bool isSprinting;
+
+    [Header("Crouch")]
+    public float crouchHeight = 1f;
+    public float standHeight = 2f;
     public float crouchSpeed;
+    private bool isCrouching;
+    private CapsuleCollider col;
+    public float crouchTransitionSpeed = 10f;
+
+
     public float groundDrag;
 
     public float jumpForce;
@@ -55,37 +64,38 @@ public class PlayerMovement : NetworkBehaviour
         rb.freezeRotation = true;
         isWalkingHash = Animator.StringToHash("isWalking");
         isSprintingHash = Animator.StringToHash("isSprinting");
+        col = GetComponent<CapsuleCollider>();
+        standHeight = col.height; // store original
     }
 
     // Update is called once per frame
     void Update()
     {
 
-        if (!IsOwner)
-        {
-            return;
-        }
+        if (!IsOwner) return;
 
-        // ground check
+        // Move chat check to TOP so it blocks input early
+        if (ChatManager.Instance != null && ChatManager.chatOpen) return;
+
         grounded = Physics.Raycast(transform.position, Vector3.down, playerHeight * 0.5f + 0.2f, WhatIsGround);
 
         if (!Ragdoll.RagMode)
         {
-        MyInput();
-        SpeedControl();
-        HandleFOV();
+            MyInput();
+            SpeedControl();
+            HandleFOV();
         }
 
-        // handle drag
         if (grounded)
             rb.linearDamping = groundDrag;
         else
             rb.linearDamping = 0;
-
-        if (ChatManager.Instance != null && ChatManager.chatOpen) return;
     }
     private void FixedUpdate() 
     {
+        if (!IsOwner) return;
+        if (Ragdoll.RagMode) return;
+
         MovePlayer();
     }
 
@@ -131,7 +141,7 @@ public class PlayerMovement : NetworkBehaviour
         
 
         // Sprint
-        if (Input.GetKey(sprintKey))  // remove && grounded
+        if (Input.GetKey(sprintKey) && !isCrouching)  // remove && grounded
         {
             isSprinting = true;
             if (grounded) Sprint(); // still only apply sprint speed on ground
@@ -143,9 +153,13 @@ public class PlayerMovement : NetworkBehaviour
         }
 
         // Crouch (overrides sprint if both pressed)
-        if (Input.GetKey(crouchKey))
+        if (Input.GetKeyDown(crouchKey) && !isSprinting)
         {
             Crouch();
+        }
+        if (Input.GetKeyUp(crouchKey))
+        {
+            StandUp();
         }
 
     }
@@ -178,7 +192,23 @@ public class PlayerMovement : NetworkBehaviour
 
     private void Crouch()
     {
+        isCrouching = true;
         moveSpeed = crouchSpeed;
+        col.height = crouchHeight;
+        col.center = new Vector3(0, -0.7f, 0);
+        float difference = (standHeight - crouchHeight) / 2f;
+        rb.MovePosition(rb.position - new Vector3(0, difference, 0));
+    }
+
+    private void StandUp()
+    {
+        if (Physics.Raycast(transform.position, Vector3.up, standHeight)) return;
+
+        isCrouching = false;
+        col.height = standHeight;
+        col.center = new Vector3(0, -0.7f, 0);
+        float difference = (standHeight - crouchHeight) / 2f;
+        rb.MovePosition(rb.position + new Vector3(0, difference, 0));
     }
     private void ResetJump() 
     {

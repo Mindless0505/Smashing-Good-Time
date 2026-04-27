@@ -15,6 +15,10 @@ public class PlayerCamera : NetworkBehaviour
     public float xRotation;
     public float yRotation;
 
+    public float sensitivityStep = 10f;
+    public float minSensitivity = 10f;
+    public float maxSensitivity = 500f;
+
     public Camera MainCam;
     public Transform MainTransform;
     public bool CamOn;
@@ -47,6 +51,20 @@ public class PlayerCamera : NetworkBehaviour
         {
             return;
         }
+
+        //if (Input.GetKeyDown(KeyCode.Equals)) // + key (same key as = on most keyboards)
+        //{
+        //    sensX = Mathf.Clamp(sensX + sensitivityStep, minSensitivity, maxSensitivity);
+        //    sensY = sensX;
+        //    PlayerPrefs.SetFloat("Sensitivity", sensX);
+        //}
+
+        //if (Input.GetKeyDown(KeyCode.Minus))
+        //{
+        //    sensX = Mathf.Clamp(sensX - sensitivityStep, minSensitivity, maxSensitivity);
+        //    sensY = sensX;
+        //    PlayerPrefs.SetFloat("Sensitivity", sensX);
+        //}
 
         // get the mouse input
         float mouseX = Input.GetAxisRaw("Mouse X") * Time.deltaTime * sensX;
