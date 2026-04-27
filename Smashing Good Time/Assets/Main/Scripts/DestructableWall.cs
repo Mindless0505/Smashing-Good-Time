@@ -10,7 +10,7 @@ public class DestructableWall : NetworkBehaviour
     public float requiredFallImpact = 10f;
     public float requiredHealth = 50f;
     public int oddsOfSpawningCrumbs = 10;
-    private float RequiredHeavyHit = 20f;
+    private float RequiredHeavyHit = 30f;
 
     // Wall that replaces
     [SerializeField] private GameObject destroyedWallPrefab;
