@@ -8,24 +8,28 @@ public class Grab : NetworkBehaviour
 
     public Camera cam;
     public float grabDistance = 2f;     // how far you can grab things
-    public float holdDistance = 3f;     // where the object is held
-    public float grabForce = 800f;      // how strong the pull is
-    public float dropForceLimit = 30f;  // max force before dropping
+    // public float holdDistance = 3f;     // where the object is held
+    // public float grabForce = 800f;      // how strong the pull is
+    // public float dropForceLimit = 30f;  // max force before dropping
     public float throwForce= 1f;
 
-    public float adjustedGrabForce;
-    public float adjustedDropLimit;
+    // public float adjustedGrabForce;
+    // public float adjustedDropLimit;
     
     public SledgeAttack Sledge;
     public LayerMask grabLayer;
 
     public Rigidbody heldObject;
-    float distanceToObject;
-    private SharedPhysics heldSharedPhysics;
+    // float distanceToObject;
+    // private SharedPhysics heldSharedPhysics;
     private RagdollController Ragdoll;
 
     [SerializeField] private RawImage XHair;
     [SerializeField] private RawImage GrabXHair;
+    [SerializeField] private Transform objectGrabPointTransform;
+    private bool isGrabbed = false;
+    
+    private ObjectGrabbable objectGrabbable;
 
     // Update is called once per frame
     void Awake()
@@ -57,17 +61,75 @@ public class Grab : NetworkBehaviour
             return;
         }
 
+        // if (Input.GetKeyDown(KeyCode.E))
+        // {
+        //     if (heldObject == null)
+        //         TryGrab();
+        //     else
+        //         DropObject();
+        // }
+
+        // if (heldObject != null && Input.GetMouseButtonDown(0))
+        // {
+        //     ThrowObject();
+        // }
+
         if (Input.GetKeyDown(KeyCode.E))
         {
-            if (heldObject == null)
-                TryGrab();
-            else
-                DropObject();
+            if (objectGrabbable == null){
+                float pickUpDistance = 2f;
+                if (Physics.Raycast(cam.transform.position, cam.transform.forward, out RaycastHit raycastHit, pickUpDistance, grabLayer)){
+                    if (raycastHit.collider.CompareTag("Throwable") && raycastHit.transform.TryGetComponent(out objectGrabbable))
+                    {
+                        NetworkObject netObj = raycastHit.collider.GetComponent<NetworkObject>();
+                        if (netObj != null)
+                            RequestOwnershipServerRpc(new NetworkObjectReference(netObj));
+
+                        objectGrabbable.Grab(objectGrabPointTransform);
+                        heldObject = raycastHit.rigidbody;
+                        isGrabbed = true;
+
+                        NetworkChunk chunk = raycastHit.rigidbody.GetComponent<NetworkChunk>();
+                        if (chunk != null) chunk.OnGrabbed();
+
+                        Sledge.SetVisualsActive(false);
+                        
+                    }
+                }
+            } 
+            else 
+            {
+                NetworkChunk chunk = heldObject.GetComponent<NetworkChunk>();
+                // Rigidbody dropped = heldObject;
+                NetworkObject netObj = heldObject.GetComponent<NetworkObject>();
+                if (netObj != null)
+                    ReturnOwnershipServerRpc(new NetworkObjectReference(netObj));
+                objectGrabbable.Drop();
+                objectGrabbable = null;
+                isGrabbed = false;
+                Sledge.SetVisualsActive(true);
+                if (chunk != null) chunk.OnDropped();
+            }
         }
 
-        if (heldObject != null && Input.GetMouseButtonDown(0))
+        if (isGrabbed == true)
         {
-            ThrowObject();
+            if (Input.GetMouseButtonDown(0))
+            {
+                objectGrabbable.Throw(cam.transform.forward);
+                objectGrabbable = null;
+                isGrabbed = false;
+                Sledge.SetVisualsActive(true);
+
+            }
+        }
+
+         if (isGrabbed == true && Ragdoll.RagMode)
+        {
+                objectGrabbable.Drop();
+                objectGrabbable = null;
+                isGrabbed = false;
+                
         }
 
     }
@@ -81,80 +143,85 @@ public class Grab : NetworkBehaviour
             if (!IsOwner) continue;
             
             bool canGrab = Physics.Raycast(cam.transform.position, cam.transform.forward, out RaycastHit hit, grabDistance) 
-                        && !Ragdoll.RagMode && heldObject == null && hit.collider.CompareTag("Throwable");
+                        && !Ragdoll.RagMode && isGrabbed == false && hit.collider.CompareTag("Throwable");
 
             XHair.enabled = !canGrab;
             GrabXHair.enabled = canGrab;
         }
     }
 
-    public void TryGrab()
-    {
-        if (Physics.Raycast(cam.transform.position, cam.transform.forward, out RaycastHit hit, grabDistance, grabLayer))
-        {
-            if (hit.rigidbody != null)
-            {
-                heldSharedPhysics = hit.rigidbody.GetComponent<SharedPhysics>();
-                if (heldSharedPhysics == null) return; // only grab objects with SharedPhysics
+    // public void TryGrab()
+    // {
+    //     if (Physics.Raycast(cam.transform.position, cam.transform.forward, out RaycastHit hit, grabDistance, grabLayer))
+    //     {
+    //         if (hit.rigidbody != null)
+    //         {
+    //             heldSharedPhysics = hit.rigidbody.GetComponent<SharedPhysics>();
+    //             if (heldSharedPhysics == null) return; // only grab objects with SharedPhysics
 
-                Sledge.SetVisualsActive(false);
+    //             Sledge.SetVisualsActive(false);
 
-                heldObject = hit.rigidbody;
-                heldObject.useGravity = false;
-                heldObject.linearDamping = 1f; // smoother control
-                distanceToObject = hit.distance;
+    //             heldObject = hit.rigidbody;
+    //             heldObject.useGravity = false;
+    //             heldObject.linearDamping = 1f; // smoother control
+    //             distanceToObject = hit.distance;
 
-                NetworkChunk chunk = hit.rigidbody.GetComponent<NetworkChunk>();
-                if (chunk != null) chunk.OnGrabbed();
+    //             NetworkChunk chunk = hit.rigidbody.GetComponent<NetworkChunk>();
+    //             if (chunk != null) chunk.OnGrabbed();
 
-                float mass = heldObject.mass;
-                // adjustedGrabForce = grabForce / Mathf.Clamp(mass/2, 1f, 20f); 
-                // adjustedDropLimit = dropForceLimit / Mathf.Clamp(mass * 0.5f, 1f, 20f);
-            }
-        }
-    }
+    //             float mass = heldObject.mass;
+    //             // adjustedGrabForce = grabForce / Mathf.Clamp(mass/2, 1f, 20f); 
+    //             // adjustedDropLimit = dropForceLimit / Mathf.Clamp(mass * 0.5f, 1f, 20f);
+    //         }
+    //     }
+    // }
 
     void FixedUpdate()
     {
         if (!IsOwner) return;
-        if (heldObject != null)
+        // if (heldObject != null)
+        if (isGrabbed == true)
         {
-            Vector3 holdPoint = cam.transform.position + cam.transform.forward * holdDistance;
-            Vector3 toHold = holdPoint - heldObject.position;
+    //         Vector3 holdPoint = cam.transform.position + cam.transform.forward * holdDistance;
+    //         Vector3 toHold = holdPoint - heldObject.position;
 
-            // Apply force toward hold position
-            heldSharedPhysics.ApplyForceServerRpc(toHold * grabForce * Time.fixedDeltaTime, ForceMode.Acceleration);
+    //         // Apply force toward hold position
+    //         heldSharedPhysics.ApplyForceServerRpc(toHold * grabForce * Time.fixedDeltaTime, ForceMode.Acceleration);
 
             
-            if (heldObject.linearVelocity.magnitude > dropForceLimit || toHold.magnitude > grabDistance * 1.15f)
-            {
-                DropObject();
-            }
+    //         if (heldObject.linearVelocity.magnitude > dropForceLimit || toHold.magnitude > grabDistance * 1.15f)
+    //         {
+    //             DropObject();
+    //         }
 
             if (IsStandingOn(heldObject))
             {
-                DropObject();
+                // DropObject();
+                objectGrabbable.Drop();
+                objectGrabbable = null;
+                isGrabbed = false;
+                Sledge.SetVisualsActive(true);
             }
         }
     }
 
-    public void DropObject()
-    {
-        if (heldObject == null) return;
+    // public void DropObject()
+    // {
+    //     if (heldObject == null) return;
 
-        // Cache reference BEFORE nulling
-        NetworkChunk chunk = heldObject.GetComponent<NetworkChunk>();
-        Rigidbody dropped = heldObject;
+    //     // Cache reference BEFORE nulling
+    //     NetworkChunk chunk = heldObject.GetComponent<NetworkChunk>();
+    //     Rigidbody dropped = heldObject;
 
-        SetGravityServerRpc(heldSharedPhysics.GetComponent<NetworkObject>(), true, 0f);
+    //     SetGravityServerRpc(heldSharedPhysics.GetComponent<NetworkObject>(), true, 0f);
 
-        heldSharedPhysics = null;
-        heldObject = null;
-        Sledge.SetVisualsActive(true);
+    //     heldSharedPhysics = null;
+    //     heldObject = null;
+    //     Sledge.SetVisualsActive(true);
 
-        // Now safe to call
-        if (chunk != null) chunk.OnDropped();
-    }
+    //     // Now safe to call
+    //     if (chunk != null) chunk.OnDropped();
+    // }
 
     bool IsStandingOn(Rigidbody obj)
     {
@@ -169,23 +236,35 @@ public class Grab : NetworkBehaviour
         return false; 
     }
 
-    void ThrowObject()
-    {
-        heldSharedPhysics.ApplyForceServerRpc(cam.transform.forward * throwForce, ForceMode.Force);
-        DropObject();
-    }
+    // void ThrowObject()
+    // {
+    //     heldSharedPhysics.ApplyForceServerRpc(cam.transform.forward * throwForce, ForceMode.Force);
+    //     DropObject();
+    // }
 
-    [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
-    void SetGravityServerRpc(NetworkObjectReference netObjRef, bool useGravity, float drag)
+    // [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
+    // void SetGravityServerRpc(NetworkObjectReference netObjRef, bool useGravity, float drag)
+    // {
+    //     if (!netObjRef.TryGet(out NetworkObject netObj)) return;
+    //     Rigidbody rb = netObj.GetComponent<Rigidbody>();
+    //     if (rb == null) return;
+    //     rb.useGravity = useGravity;
+    //     rb.linearDamping = drag;
+    // }
+
+    [Rpc(SendTo.Server)]
+    private void RequestOwnershipServerRpc(NetworkObjectReference netObjRef)
     {
         if (!netObjRef.TryGet(out NetworkObject netObj)) return;
-        Rigidbody rb = netObj.GetComponent<Rigidbody>();
-        if (rb == null) return;
-        rb.useGravity = useGravity;
-        rb.linearDamping = drag;
+        netObj.ChangeOwnership(OwnerClientId);
     }
 
-    
+    [Rpc(SendTo.Server)]
+    private void ReturnOwnershipServerRpc(NetworkObjectReference netObjRef)
+    {
+        if (!netObjRef.TryGet(out NetworkObject netObj)) return;
+        netObj.ChangeOwnership(NetworkManager.ServerClientId);
+    }
 
 }
 

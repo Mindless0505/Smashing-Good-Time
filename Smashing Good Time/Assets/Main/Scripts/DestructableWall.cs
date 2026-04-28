@@ -116,6 +116,7 @@ public class DestructableWall : NetworkBehaviour
             netRb.enabled = true;
             netTransform.enabled = true;
             gameObject.tag = "Throwable";
+            gameObject.AddComponent<ObjectGrabbable>();
         }
         if (impactStrength >= requiredImpact || requiredHealth <= 0f)
         {

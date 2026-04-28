@@ -17,4 +17,7 @@ public class SharedPhysics : NetworkBehaviour
     {
         rb.AddForceAtPosition(force, position, mode);
     }
+
+
+    
 }
