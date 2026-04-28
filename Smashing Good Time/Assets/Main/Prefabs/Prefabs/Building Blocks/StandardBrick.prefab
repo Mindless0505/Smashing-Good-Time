@@ -269,9 +269,9 @@ MonoBehaviour:
     m_Bits: 0
   impactSounds:
   - {fileID: 8300000, guid: 794fd20604e97a94db30dd80fde69ac4, type: 3}
-  - {fileID: 8300000, guid: 769a5bebc767a6d41b8f1215f35490f2, type: 3}
+  - {fileID: 8300000, guid: d3d28c09c0486ce4ab2cf9411dfc660c, type: 3}
   - {fileID: 8300000, guid: 3607cab92e01bc74fad35203d2e511a2, type: 3}
-  heavyImpactSound: {fileID: 8300000, guid: 0efb9e3f16122f74c8c07a457afdf0c7, type: 3}
+  heavyImpactSound: {fileID: 8300000, guid: 0b2010f05f10a664981ac6dd3888af46, type: 3}
 --- !u!114 &5686232579387003141
 MonoBehaviour:
   m_ObjectHideFlags: 0

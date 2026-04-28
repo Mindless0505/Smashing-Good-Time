@@ -184,10 +184,10 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 0
   impactSounds:
-  - {fileID: 8300000, guid: 4c7f5620458cc7b4090e2fe453b1597a, type: 3}
-  - {fileID: 8300000, guid: 1a11ac6d3cc29114fa297074ad3c0047, type: 3}
+  - {fileID: 8300000, guid: de5ae76fd730f1c4cbdac013f351aa03, type: 3}
+  - {fileID: 8300000, guid: 42292a413d7f9584783cb87d974b9927, type: 3}
   - {fileID: 8300000, guid: d6f506a363294704697c81b70fdb6e74, type: 3}
-  heavyImpactSound: {fileID: 8300000, guid: c2cf719e01c243a498d2130a30579faa, type: 3}
+  heavyImpactSound: {fileID: 8300000, guid: ae1594ee309042f488cddd70cc84d22b, type: 3}
 --- !u!114 &6180521669526764655
 MonoBehaviour:
   m_ObjectHideFlags: 0
