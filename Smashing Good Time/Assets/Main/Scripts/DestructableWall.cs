@@ -91,20 +91,20 @@ public class DestructableWall : NetworkBehaviour
         }
         else
         {
-            // if (impactStrength >= requiredFallImpact)
-            // {
-            //     Wallrb.constraints = RigidbodyConstraints.None;
-            //     // netObj.enabled = true;
-            //     netRb.enabled = true;
-            //     netTransform.enabled = true;
+            if (impactStrength >= requiredFallImpact)
+            {
+                Wallrb.constraints = RigidbodyConstraints.None;
+                // netObj.enabled = true;
+                netRb.enabled = true;
+                netTransform.enabled = true;
 
-            //     Vector3 impulse = collision.impulse;
-            //     Wallrb.AddForce(impulse, ForceMode.Impulse);
-            // }
+                Vector3 impulse = collision.impulse;
+                Wallrb.AddForce(impulse, ForceMode.Impulse);
+            }
 
             // Client reports collision to server
-            SharedPhysics sp = GetComponent<SharedPhysics>();
-            if (sp != null)
+            // SharedPhysics sp = GetComponent<SharedPhysics>();
+            // if (sp != null)
                 ReportImpactServerRpc(impactStrength);
         }
     }
