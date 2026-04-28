@@ -59,7 +59,8 @@ public class ObjectGrabbable : NetworkBehaviour
         if (objectGrabPointTransform != null)
         {
             float lerpSpeed = 30f;
-            Vector3 newPosition = Vector3.Lerp(transform.position, objectGrabPointTransform.position, Time.deltaTime * lerpSpeed);
+            float t = 1 - Mathf.Pow(1 - 0.95f, Time.deltaTime * lerpSpeed);
+            Vector3 newPosition = Vector3.Lerp(transform.position, objectGrabPointTransform.position, t);
             objectRigidbody.MovePosition(newPosition);
             // MoveServerRpc(newPosition);
         }
