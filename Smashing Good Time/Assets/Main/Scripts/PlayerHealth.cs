@@ -49,7 +49,7 @@ public class PlayerHealth : NetworkBehaviour
         }
         else
         {
-            damPerc.Value += Random.Range(10,20);
+            damPerc.Value += Random.Range(5,10);
         }
         
 

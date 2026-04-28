@@ -42,7 +42,7 @@ public class DestructableWall : NetworkBehaviour
         audioSource = GetComponent<AudioSource>();
 
         Wallrb.constraints = RigidbodyConstraints.FreezeAll;
-        netObj.enabled = false;
+        // netObj.enabled = false;
         netRb.enabled = false;
         netTransform.enabled = false;
 
@@ -112,11 +112,10 @@ public class DestructableWall : NetworkBehaviour
         if (impactStrength >= requiredFallImpact)
         {
             Wallrb.constraints = RigidbodyConstraints.None;
-            netObj.enabled = true;
+            // netObj.enabled = true;
             netRb.enabled = true;
             netTransform.enabled = true;
-            gameObject.tag = "Throwable";
-            gameObject.AddComponent<ObjectGrabbable>();
+            EnableNetworkingClientRpc();
         }
         if (impactStrength >= requiredImpact || requiredHealth <= 0f)
         {
@@ -195,5 +194,16 @@ public class DestructableWall : NetworkBehaviour
         {
             AudioSource.PlayClipAtPoint(impactSounds[Random.Range(0, impactSounds.Length)], position);
         }
+    }
+
+
+    [ClientRpc]
+    private void EnableNetworkingClientRpc()
+    {
+        if (IsServer) return;
+        Wallrb.constraints = RigidbodyConstraints.None;
+        netRb.enabled = true;
+        netTransform.enabled = true;
+        gameObject.tag = "Throwable";
     }
 }
